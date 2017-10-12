@@ -1,0 +1,15 @@
+
+# files
+**/.DS_Store
+.DS_Store
+*.pyc
+.notes
+.coverage
+.python-version
+MANIFEST
+
+# directories
+env/
+htmlcov/
+dist/
+*.egg-info/
