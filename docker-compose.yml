@@ -1,0 +1,13 @@
+version: "3.0"
+services:
+
+  delimited:
+    build: .
+    image: delimited
+    container_name: delimited
+    volumes:
+      - ./delimited:/delimited/delimited
+      - ./setup.py:/delimited/setup.py
+      - ./test:/test
+      - ./htmlcov:/htmlcov
+      - ./docs:/docs

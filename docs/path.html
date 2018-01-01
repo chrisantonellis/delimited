@@ -1,0 +1,370 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>delimited.path &mdash; delimited 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="delimited 0.0.1 documentation" href="index.html"/>
+        <link rel="next" title="NestedContainer" href="nestedcontainer.html"/>
+        <link rel="prev" title="Usage" href="usage.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> delimited
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="abstract.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">delimited.path</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#path">Path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tuplepath">TuplePath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#delimitedstrpath">DelimitedStrPath</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nestedcontainer.html">NestedContainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terms.html">Terms</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">delimited</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>delimited.path</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/path.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="delimited-path">
+<h1>delimited.path<a class="headerlink" href="#delimited-path" title="Permalink to this headline">¶</a></h1>
+<p>This module defines Path objects. a Path object implements an interface though
+which a path to nested data can be defined using one or more path segments.</p>
+<div class="section" id="path">
+<h2>Path<a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Path">
+<em class="property">class </em><code class="descname">Path</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#Path" title="Permalink to this definition">¶</a></dt>
+<dd><p>The abstract base class for Path objects. When subclassing Path the
+_encode and _decode methods must be overridden to handle an external
+representation. Path segments are stored internally in a list in the
+segments attribute.</p>
+<dl class="method">
+<dt id="Path._encode">
+<code class="descname">_encode</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#Path._encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode list to external representation. This method must be
+overridden when subclassing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path._decode">
+<code class="descname">_decode</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#Path._decode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode a value in external representation format to a list. This
+method must be overridden when subclassing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#Path.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="descname">append</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span></dt>
+<dd><p>Add value to the end of self.segments. Accepts a path segment.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.extend">
+<code class="descname">extend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.pop">
+<code class="descname">pop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.index">
+<code class="descname">index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.count">
+<code class="descname">count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.reverse">
+<code class="descname">reverse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.reverse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Path.encode">
+<code class="descname">encode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Path.encode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="tuplepath">
+<h2>TuplePath<a class="headerlink" href="#tuplepath" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="TuplePath">
+<em class="property">class </em><code class="descname">TuplePath</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#TuplePath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="delimitedstrpath">
+<h2>DelimitedStrPath<a class="headerlink" href="#delimitedstrpath" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="DelimitedStrPath">
+<em class="property">class </em><code class="descname">DelimitedStrPath</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#DelimitedStrPath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="nestedcontainer.html" class="btn btn-neutral float-right" title="NestedContainer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="usage.html" class="btn btn-neutral" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Christopher Antonellis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

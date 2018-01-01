@@ -6,32 +6,27 @@ import subprocess
 import setuptools
 
 
-# read module version file
-setup_abs_path = os.path.abspath(os.path.dirname(__file__))
-version_abs_path = os.path.join(setup_abs_path, "delimited", "__version__.py")
-module_metadata = {}
-with open(version_abs_path) as file_handle:
-    exec(file_handle.read(), module_metadata)
+# read metadata
+setup_path = os.path.abspath(os.path.dirname(__file__))
+metadata_path = os.path.join(setup_path, "delimited", "__init__.py")
+metadata = {}
+with open(metadata_path) as file_handle:
+    exec(file_handle.read(), metadata)
 
 
 setuptools.setup(
-    name="delimited",
-    version=module_metadata["__version__"],
-    description="delimited defines types that allow for accessing and modifying nested data by delimited string",
+    name=metadata["__title__"],
+    version=metadata["__version__"],
+    description=metadata["__summary__"],
     keywords="delimited nested",
-    url="https://github.com/chrisantonellis/delimited",
-
-    author="Christopher Antonellis",
-    author_email="christopher.antonellis@gmail.com",
-    license="MIT",
-    packages=[
-        "delimited"
-    ],
+    url=metadata["__url__"],
+    author=metadata["__author__"],
+    author_email=metadata["__email__"],
+    license=metadata["__license__"],
+    packages=["delimited"],
     extras_require={
-        "tests": [
-            "green",
-            "coverage"
-        ],
+        "test": ["green", "coverage"],
+        "docs": ["sphinx", "sphinx_rtd_theme"]
     },
     classifiers=[
         "Development Status :: 3 - Alpha"

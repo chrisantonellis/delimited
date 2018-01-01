@@ -1,0 +1,55 @@
+NestedContainer
+===============
+
+NestedContainer
+---------------
+
+.. py:class:: NestedContainer()
+
+  .. py:method:: _merge()
+
+  .. py:method:: _expand()
+
+  .. py:method:: _collapse()
+
+  .. py:method:: items()
+
+  .. py:method:: keys()
+
+  .. py:method:: values()
+
+  .. py:method:: ref()
+
+  .. py:method:: get()
+
+  .. py:method:: has()
+
+  .. py:method:: spawn()
+
+  .. py:method:: clone()
+
+  .. py:method:: merge()
+
+  .. py:method:: collapse()
+
+  .. py:method:: update()
+
+  .. py:method:: set()
+
+  .. py:method:: push()
+
+  .. py:method:: pull()
+
+  .. py:method:: unset()
+
+
+NestedDict
+----------
+
+  .. py:class:: NestedDict()
+  
+  
+DelimitedDict
+-------------
+
+  .. py:class:: DelimitedDict()
