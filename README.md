@@ -1,5 +1,7 @@
 # Delimited
 
+[![Build Status](https://travis-ci.org/chrisantonellis/delimited.svg?branch=master)](https://travis-ci.org/chrisantonellis/delimited) [![Coverage Status](https://coveralls.io/repos/github/chrisantonellis/delimited/badge.svg?branch=master)](https://coveralls.io/github/chrisantonellis/delimited?branch=master)
+
 ## Installation
 
 ```
