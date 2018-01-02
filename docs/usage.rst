@@ -23,7 +23,7 @@ Setup
     }
   }
   
-  user = DelmitedDict(data)
+  user = DelimitedDict(data)
 
 Access
 ^^^^^^
