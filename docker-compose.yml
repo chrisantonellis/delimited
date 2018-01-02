@@ -11,3 +11,4 @@ services:
       - ./test:/test
       - ./htmlcov:/htmlcov
       - ./docs:/docs
+      - ./build:/build
