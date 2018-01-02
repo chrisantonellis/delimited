@@ -344,7 +344,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path[:-1], create=create)
+        haystack = self.ref(path.head or None, create=create)
         needle = path[-1]
         haystack[needle] = value
 
@@ -359,7 +359,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path[:-1], create=create)
+        haystack = self.ref(path.head, create=create)
         needle = path[-1]
 
         try:
@@ -389,7 +389,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path[:-1])
+        haystack = self.ref(path.head or None)
         needle = path[-1]
 
         haystack[needle].remove(value)
@@ -409,7 +409,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path[:-1])
+        haystack = self.ref(path.head or None)
         needle = path[-1]
 
         del haystack[needle]
