@@ -408,7 +408,7 @@ class TestNestedDict(unittest.TestCase):
             }
         })
 
-    def test__merge__NestdDict_params(self):
+    def test__merge__NestedDict_params(self):
         a1 = NestedDict({("k1",): "v"})
         a2 = NestedDict({("k2",): "v"})
         a = NestedDict._merge(a1, a2)
