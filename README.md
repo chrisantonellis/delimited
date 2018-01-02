@@ -1,29 +1,47 @@
-### Delimited
+# Delimited
 
-#### Installation
+## Installation
 
 ```
 pip install delimited
 ```
 
-#### Documentation
+## Documentation
 
 [https://chrisantonellis.github.io/delimited/](https://chrisantonellis.github.io/delimited/)
 
-#### About
+## Abstract
 
 **Nested data** can be easily expressed in python but not easily accessed or modified. Using builtin methods, accessing nested data requires chaining `dict.get()` calls.
+``` python
+  mydict = {
+    "key1": {
+      "key2": {
+        "key3": "value"
+      }
+    }
+  }
 
-```
-  mydict.get("exterior", {}).get("color", {}).get("trim", {})
+  mydict.get("key1", {}).get("key2", {}).get("key3", {})
   # wow bummer
 ```
     
-This is overly verbose and lacks the functionality needed to effectively interact with the data. **Delimited** provides classes that emulate native types and make accessing and modifying nested data easier. 
+This is overly verbose and lacks the functionality needed to effectively interact with the data. Delimited provides classes that emulate native types and make accessing and modifying nested data easier. 
 
-```
-  mydict.get("exterior.color.trim")
+``` python
+  from delimited import DelimitedDict as ddict
+  
+  mydict = ddict({
+    "key1": {
+      "key2": {
+        "key3": "value"
+      },
+      "key4": ["value"]
+    }
+  })
+
+  mydict.get("key1.key2.key3")
   # much better
 ```
 
-**Delimited** provides `Path` classes to represent paths to nested data using tuples or strings, and `NestedContainer` classes that emulate the native `dict` and `collections.OrderedDict` types.
+Delimited provides `Path` classes to represent paths to nested data using tuples or strings, and `NestedContainer` classes that emulate the native `dict` and `collections.OrderedDict` types. Check out the [documentation](https://chrisantonellis.github.io/delimited/) to learn more.
