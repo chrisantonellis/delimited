@@ -1,5 +1,17 @@
 ### Delimited
 
+#### Installation
+
+```
+pip install delimited
+```
+
+#### Documentation
+
+[https://chrisantonellis.github.io/delimited/](https://chrisantonellis.github.io/delimited/)
+
+#### About
+
 **Nested data** can be easily expressed in python but not easily accessed or modified. Using builtin methods, accessing nested data requires chaining `dict.get()` calls.
 
 ```
