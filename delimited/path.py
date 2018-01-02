@@ -86,7 +86,7 @@ class Path(abc.ABC):
         """ Return class name joined with encoded path segments cast to str.
         """
         
-        return "{}({})".format(self.__class__.__name__, self.encode())
+        return f"{self.__class__.__name__}('{self.encode()}')"
 
     def __iter__(self):
         """ Yield path segments.
