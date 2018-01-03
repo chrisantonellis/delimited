@@ -2,8 +2,9 @@ language: python
 python:
   - "3.6"
 install:
-  - pip install /delimited[tests]
+  - pip install /delimited/delimited[tests]
   - pip install coveralls
+before_script: cd delimited
 script: green -r
 after_success:
   coveralls
