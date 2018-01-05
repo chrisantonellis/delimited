@@ -1,4 +1,4 @@
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 __title__ = "delimited"
 __summary__ = "Defines types that allow for accessing and modifying nested data"
 __url__ = "https://github.com/chrisantonellis/delimited"
