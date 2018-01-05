@@ -12,8 +12,8 @@ import copy
 
 class Path(abc.ABC):
     """ The abstract base class for Path objects. When subclassing Path the
-    _encode and _decode methods must be overridden to handle an external 
-    representation. Path segments are stored internally in a list in the
+    _encode and _decode methods must be overridden to handle a collapsed path
+    format. Path segments are stored internally in a list in the
     segments attribute.
     """
 
@@ -41,8 +41,8 @@ class Path(abc.ABC):
         return self.__add__(other)
 
     def __eq__(self, other):
-        """ Compare equality with instance of self or path in external 
-        representation format.
+        """ Compare equality with instance of self or path in collapsed path 
+        format.
         """
 
         if isinstance(other, self.__class__):
@@ -52,8 +52,8 @@ class Path(abc.ABC):
         return value
 
     def __ne__(self, other):
-        """ Compare inequality with instance of self or path in external 
-        representation format.
+        """ Compare inequality with instance of self or path in collapsed path 
+        format.
         """
         
         return not self.__eq__(other)
@@ -110,7 +110,7 @@ class Path(abc.ABC):
 
     def __getitem__(self, i):
         """ Return item at index or slice in collapsed path format.
-        """
+        """ 
         
         value = self.segments[i]
         if isinstance(value, list):
@@ -235,8 +235,8 @@ class Path(abc.ABC):
 
 
 class TuplePath(Path):
-    """ This class implements tuple path notation as its external 
-    representation. TuplePaths can handle any hashable type as a path segment.
+    """ This class implements tuple path notation as its collapsed path format. 
+    TuplePaths can handle any hashable type as a path segment.
     Example: ("key1", "key2", "key3")
     """
 
