@@ -154,6 +154,7 @@ class TestNestedDict(unittest.TestCase):
     def test___copy__(self):
         a1 = NestedDict({("k1", "k2", "k3"): "v"})
         a2 = copy.copy(a1)
+        
         self.assertIsNot(a1, a2)
         self.assertEqual(a1, a2)
         a1.set(("k1", "k2"), "bar")

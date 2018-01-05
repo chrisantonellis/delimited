@@ -345,6 +345,7 @@ class NestedContainer(abc.ABC, dict):
             path = self.path(path)
 
         haystack = self.ref(path.head or None, create=create)
+        
         needle = path[-1]
         haystack[needle] = value
 

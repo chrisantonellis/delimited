@@ -86,7 +86,7 @@ class Path(abc.ABC):
         """ Return class name joined with encoded path segments cast to str.
         """
         
-        return f"{self.__class__.__name__}('{self.encode()}')"
+        return f"{self.__class__.__name__}({self.encode()})"
 
     def __iter__(self):
         """ Yield path segments.
@@ -151,8 +151,11 @@ class Path(abc.ABC):
         """ Return the head of the list of path segments, meaning all segments 
         except for the last one. If there is only one segment return None
         """
-        
-        return self.segments[:-1] if len(self.segments) > 1 else None
+    
+        value = self.segments[:-1]
+        if isinstance(value, list):
+            value = self._encode(value)
+        return value or None
 
     def append(self, value):
         """ Add value to the end of path segments. Accepts a path segment.
@@ -273,3 +276,9 @@ class DelimitedStrPath(Path):
         """
         
         return value.split(self.delimiter)
+
+    def __repr__(self):
+        """ Custom repr for string based path
+        """
+        
+        return f"{self.__class__.__name__}('{self.encode()}')"
