@@ -58,7 +58,7 @@ An group of path segments that represent a location within a nested data structu
 Path segment
 ^^^^^^^^^^^^
 
-A single part of a path representing a single level in a nested data structure.
+A single part of a path representing a single location or level in a nested data structure.
 
     ::
     
