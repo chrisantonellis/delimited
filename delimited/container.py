@@ -19,7 +19,7 @@ class NestedContainer(abc.ABC, dict):
     """ The abstract base class for NestedContainer objects. When subclassing 
     NestedContainer the path and container attributes must be overridden with a 
     Path object and container type respectively. The path object chosen defines 
-    the external representation used by the NestedContainer class.
+    the collapsed path format used by the NestedContainer class.
     """
     
     """ The Path object used to define paths to nested data

@@ -109,7 +109,7 @@ class Path(abc.ABC):
         return key in self.segments
 
     def __getitem__(self, i):
-        """ Return item at index or slice in external representation format.
+        """ Return item at index or slice in collapsed path format.
         """
         
         value = self.segments[i]
@@ -131,7 +131,7 @@ class Path(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def _encode(self, value):
-        """ Encode list to external representation. This method must be 
+        """ Encode list to collapsed path. This method must be 
         overridden when subclassing.
         """
         
@@ -140,7 +140,7 @@ class Path(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def _decode(self, value):
-        """ Decode a value in external representation format to a list. This 
+        """ Decode a value in collapsed path format to a list. This 
         method must be overridden when subclassing.
         """
         
@@ -242,14 +242,14 @@ class TuplePath(Path):
 
     @classmethod
     def _encode(self, value):
-        """ Encode a list to external representation format.
+        """ Encode a list to collapsed path format.
         """
         
         return tuple(value)
 
     @classmethod
     def _decode(self, value):
-        """ Decode external representation format to a list.
+        """ Decode collapsed path format to a list.
         """
         
         return list(value) if isinstance(value, tuple) else [value]
@@ -257,7 +257,7 @@ class TuplePath(Path):
 
 class DelimitedStrPath(Path):
     """ This class implements delimited string path notation as its 
-    external representation.
+    collapsed path.
     Example: "key1.key2.key3"
     """
 
@@ -265,14 +265,14 @@ class DelimitedStrPath(Path):
 
     @classmethod
     def _encode(self, value):
-        """ Encode a list to external representation format.
+        """ Encode a list to collapsed path format.
         """
         
         return self.delimiter.join(value)
 
     @classmethod
     def _decode(self, value):
-        """ Decode external representation format to a list.
+        """ Decode collapsed path format to a list.
         """
         
         return value.split(self.delimiter)
