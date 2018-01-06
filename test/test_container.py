@@ -268,14 +268,14 @@ class TestNestedContainer(unittest.TestCase):
         a = NestedDict({("k1", "k2", "k3"): "v"})
         self.assertFalse(a.has(("k1", "k2", "foo")))
 
-    # spawn
+    # copy
 
-    def test_spawn(self):
+    def test_copy(self):
         a1 = NestedDict({("k1", "k2", "k3"): "v"})
-        a2 = a1.spawn()
+        a2 = a1.copy()
         self.assertEqual(a1, a2)
         a1["k1"] = "foo"
-        self.assertEqual(a1, a2)
+        self.assertNotEqual(a1, a2)
 
     # clone
 
@@ -284,7 +284,7 @@ class TestNestedContainer(unittest.TestCase):
         a2 = a1.clone()
         self.assertEqual(a1, a2)
         a1["k1"] = "foo"
-        self.assertNotEqual(a1, a2)
+        self.assertEqual(a1, a2)
 
     # set
 

@@ -301,6 +301,23 @@ class TestTuplePath(unittest.TestCase):
         self.assertEqual(a, b)
         a[1] = "foo"
         self.assertEqual(a, ("k1", "foo", "k3"))
+        self.assertNotEqual(a, b)
+        
+    def test_copy__index_set(self):
+        a = TuplePath(("k1", "k2", "k3"))
+        b = a.copy(slice(1, len(a)))
+        self.assertEqual(b, ("k2", "k3"))
+        
+    # clone
+    
+    def test_clone(self):
+        a = TuplePath(("k1", "k2", "k3"))
+        b = a.clone()
+        self.assertIsNot(a, b)
+        self.assertEqual(a, b)
+        a[1] = "foo"
+        self.assertEqual(a, ("k1", "foo", "k3"))
+        self.assertEqual(b, ("k1", "foo", "k3"))
         self.assertEqual(a, b)
 
     # encode
