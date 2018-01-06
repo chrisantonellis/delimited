@@ -701,11 +701,17 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<em>dict</em>) – The nested data to collapse</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>dict</em>) – The nested data to collapse</li>
+<li><strong>func</strong> (<em>function</em>) – A function used to determine whether to collapse a level of nested data</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Collapsed data</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Collapsed data</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -718,10 +724,23 @@
 <span class="p">}</span>
 
 <span class="n">mycontainer</span> <span class="o">=</span> <span class="n">DelimitedDict</span><span class="p">()</span>
-<span class="n">mycontainer</span><span class="o">.</span><span class="n">_expand</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">mycontainer</span><span class="o">.</span><span class="n">_collapse</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 <span class="c1"># returns {</span>
 <span class="c1">#   &quot;key1.key2.key3&quot;: &quot;value&quot;</span>
+<span class="c1"># }</span>
+
+<span class="k">def</span> <span class="nf">should_collapse</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+  <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;key3&quot;</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">False</span>
+  <span class="k">return</span> <span class="kc">True</span>
+
+<span class="n">mycontainer</span><span class="o">.</span><span class="n">_collapse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">should_collapse</span><span class="p">)</span>
+
+<span class="c1"># returns {</span>
+<span class="c1">#   &quot;key1.key2&quot;: {</span>
+<span class="c1">#     &quot;key3&quot;: &quot;value&quot;</span>
+<span class="c1">#   }</span>
 <span class="c1"># }</span>
 </pre></div>
 </div>
