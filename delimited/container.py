@@ -215,9 +215,15 @@ class NestedContainer(abc.ABC, dict):
             return bool(self.ref(path))
         except KeyError:
             return False
-
-    # TODO: change to clone()
-    def spawn(self, path=None):
+    
+    def copy(self, path=None):
+        """ Return a new instance of self with its data set to a deep copy of 
+        this instances data.
+        """
+        
+        return self.__class__(self.get(path))
+    
+    def clone(self, path=None):
         """ Return a new instance of self with its data set to a reference of 
         this instances data.
         """
@@ -225,14 +231,6 @@ class NestedContainer(abc.ABC, dict):
         spawn = self.__class__()
         spawn.data = self.ref(path)
         return spawn
-    
-    # TODO: change to copy()
-    def clone(self, path=None):
-        """ Return a new instance of self with its data set to a deep copy of 
-        this instances data.
-        """
-        
-        return self.__class__(self.get(path))
 
     @classmethod
     def _merge(cls, a, b):

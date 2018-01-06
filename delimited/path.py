@@ -18,14 +18,20 @@ class Path(abc.ABC):
     """
 
     def __init__(self, path=None):
-        self(path)
+        self(path=path)
 
     def __call__(self, path=None):
-        """ Overwrite path segments with decoded path param.
-        If path param is None, set path segments to an empty list.
+        """ Overwrite path segments with decoded path param. If path param is 
+        None, set path segments to an empty list.
         """
 
-        self.segments = self._decode(path) if path is not None else []
+        if path is None:            
+            self.segments = []
+            
+        else:
+            if not isinstance(path, list):
+                path = self._decode(path)
+            self.segments = path
 
     def __add__(self, other):
         """ Add other to the end of path segments. Accepts a path segment.
@@ -215,17 +221,26 @@ class Path(abc.ABC):
         return self.segments.count(value)
 
     def reverse(self):
-        """ Reverse path segments in place
+        """ Reverse path segments in place.
         """
 
         self.segments = self.segments[::-1]
 
-    def copy(self):
+    def copy(self, i=None):
         """ Return an instance of self.__class__ with its path segments 
-        set to a shallow copy of this instances path segments.
+        set to a shallow copy of this instances path segments resolved 
+        index using i if passed.
         """
-
-        return copy.copy(self)
+        
+        segments = copy.copy(self.segments if i is None else self.segments[i])
+        return self.__class__(segments)
+        
+    def clone(self):
+        """ Return an instance of self.__class__ with its path segments 
+        set to a reference of this instances path segments.
+        """
+        
+        return self.__class__(self.segments)
 
     def encode(self):
         """ Call self._encode with path segments and return result.
