@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Added
+* More badges added to `README.md`
+
+### Changed
+* `spawn` method renamed to `clone` in `NestedContainer` class
+* `clone` method renamed to `copy` in `NestedContainer` class
+* `clone` method added to `Path` class
+
 ## [ 0.0.5 ] 2018-01-05
 
 ### Added
