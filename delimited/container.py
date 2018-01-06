@@ -2,8 +2,8 @@
 delimited.container
 ~~~~~~~~~~~~~~~~~~~
 
-This module defines NestedContainer objects. A NestedContainer object 
-implements an interface through which nested data can be accessed and 
+This module defines NestedContainer objects. A NestedContainer object
+implements an interface through which nested data can be accessed and
 modified using Path objects.
 """
 
@@ -16,12 +16,12 @@ from delimited.path import DelimitedStrPath
 
 
 class NestedContainer(abc.ABC, dict):
-    """ The abstract base class for NestedContainer objects. When subclassing 
-    NestedContainer the path and container attributes must be overridden with a 
-    Path object and container type respectively. The path object chosen defines 
+    """ The abstract base class for NestedContainer objects. When subclassing
+    NestedContainer the path and container attributes must be overridden with a
+    Path object and container type respectively. The path object chosen defines
     the collapsed path format used by the NestedContainer class.
     """
-    
+
     """ The Path object used to define paths to nested data
     """
     path = None
@@ -34,14 +34,14 @@ class NestedContainer(abc.ABC, dict):
         self(data)
 
     def __call__(self, data=None):
-        """ Overwrite instance data with expanded data param. If data param is 
+        """ Overwrite instance data with expanded data param. If data param is
         None, set instance data to new instance of container attribute.
         """
-        
+
         self.data = self.container() if data is None else self._expand(data)
 
     def __eq__(self, other):
-        """ Compare equality with instance of self or instance of container 
+        """ Compare equality with instance of self or instance of container
         attribute.
         """
 
@@ -50,7 +50,7 @@ class NestedContainer(abc.ABC, dict):
         return self.data == other
 
     def __ne__(self, other):
-        """  Compare inequality with instance of self or instance of container 
+        """  Compare inequality with instance of self or instance of container
         attribute.
         """
         return not self.__eq__(other)
@@ -58,7 +58,7 @@ class NestedContainer(abc.ABC, dict):
     def __hash__(self):
         """ Return has of instance data.
         """
-        
+
         return hash(str(self.data))
 
     def __bool__(self):
@@ -69,63 +69,63 @@ class NestedContainer(abc.ABC, dict):
     def __repr__(self):
         """ Return class name joined with instance data cast to str.
         """
-        
+
         return f'{self.__class__.__name__}({self.data})'
 
     def __iter__(self):
         """ Yield key, value tuples for instance data.
         """
-        
+
         for key, value in self.data.items():
             yield key, value
 
     def __contains__(self, path):
-        """ Return boolean for presence of path in instance data. Accepts path 
+        """ Return boolean for presence of path in instance data. Accepts path
         segment or value in collapsed path format.
         """
-        
+
         return self.has(path)
 
     def __getitem__(self, path):
         """ Return a reference to the value at path. Raise exception if path
         cannot be resolved.
         """
-        
+
         return self.ref(path)
 
     def __setitem__(self, path, value):
         """ Set data at path to value.
         """
-        
+
         self.set(path, value)
 
     def __delitem__(self, path):
-        """ Remove key and value at path. Raise exception if path cannot be 
+        """ Remove key and value at path. Raise exception if path cannot be
         resolved.
         """
-        
+
         self.unset(path)
 
     def __len__(self):
         """ Return length of first level of keys of instance data.
         """
-        
+
         return len(self.data)
 
     def __copy__(self):
         """ Return new instance of self with its data set to a shallow copy of
         this instances data.
         """
-        
+
         new = self.__class__()
         new.data = copy.copy(self.data)
         return new
 
     def __deepcopy__(self, *args):
-        """ Return new instance of self with its data set to a deep copy of 
+        """ Return new instance of self with its data set to a deep copy of
         this instances data.
         """
-        
+
         new = self.__class__()
         new.data = copy.deepcopy(self.data)
         return new
@@ -133,27 +133,27 @@ class NestedContainer(abc.ABC, dict):
     def items(self):
         """ Yield key, value tuples for instance data.
         """
-        
+
         for key, value in self.data.items():
             yield (key, value)
 
     def keys(self):
         """ Yield keys for instance data.
         """
-        
+
         for key in self.data.keys():
             yield key
 
     def values(self):
         """ Yield values for instance data.
         """
-        
+
         for value in self.data.values():
             yield value
 
     def ref(self, path=None, create=False):
-        """ Return a reference to nested data at path. If create is True and 
-        missing key(s) are encountered while trying to resolve path, create 
+        """ Return a reference to nested data at path. If create is True and
+        missing key(s) are encountered while trying to resolve path, create
         the missing key(s) using an instance of self.container as the value.
         """
 
@@ -170,15 +170,15 @@ class NestedContainer(abc.ABC, dict):
 
         # for each needle
         for needle in path:
-            
+
             try:
                 haystack = haystack[needle]
 
-            except KeyError:                
+            except KeyError:
                 if create:
                     haystack[needle] = self.container()
                     haystack = haystack[needle]
-                    
+
                 else:
                     # TODO: custom exception
                     raise
@@ -190,19 +190,19 @@ class NestedContainer(abc.ABC, dict):
         return haystack
 
     def get(self, path=None, *args):
-        """ Return a copy of nested data at path. First value of args is 
+        """ Return a copy of nested data at path. First value of args is
         considered the default value, and if self.ref call raises a KeyError,
         the default value will be returned.
         """
-        
+
         try:
             return copy.deepcopy(self.ref(path))
         except KeyError:
             if args:
                 return args[0]
-            # TODO: custom exception    
+            # TODO: custom exception
             raise
-            
+
         except TypeError:
             # TODO: custom exception
             raise
@@ -210,24 +210,24 @@ class NestedContainer(abc.ABC, dict):
     def has(self, path=None):
         """ Return True if path can be resolved in instance data else False.
         """
-        
+
         try:
             return bool(self.ref(path))
         except KeyError:
             return False
-    
+
     def copy(self, path=None):
-        """ Return a new instance of self with its data set to a deep copy of 
+        """ Return a new instance of self with its data set to a deep copy of
         this instances data.
         """
-        
+
         return self.__class__(self.get(path))
-    
+
     def clone(self, path=None):
-        """ Return a new instance of self with its data set to a reference of 
+        """ Return a new instance of self with its data set to a reference of
         this instances data.
         """
-        
+
         spawn = self.__class__()
         spawn.data = self.ref(path)
         return spawn
@@ -238,16 +238,21 @@ class NestedContainer(abc.ABC, dict):
         """
 
         b = copy.deepcopy(b)
-        for k in a.keys():
-            if k in b and all(isinstance(c, cls.container) for c in [a[k], b[k]]):
-                b[k] = cls._merge(a[k], b[k])
+        for key in a.keys():
+
+            if key in b \
+                    and isinstance(a[key], cls.container) \
+                    and isinstance(b[key], cls.container):
+                b[key] = cls._merge(a[key], b[key])
+
             else:
-                b[k] = a[k]
+                b[key] = a[key]
+
         return b
 
     def merge(self, data, path=None):
-        """ Merge data with a copy of instance data at path and return 
-        merged data. Will accept instance of self or instance of 
+        """ Merge data with a copy of instance data at path and return
+        merged data. Will accept instance of self or instance of
         self.container.
         """
 
@@ -300,16 +305,18 @@ class NestedContainer(abc.ABC, dict):
         for key, value in data.items():
 
             if callable(func) and func(key, value):
-                
+
                 if isinstance(value, cls.container) and len(value):
                     value = cls._collapse(value, func=func)
-                    
-                value = cls.container({path.encode(): cls.container({key: value})})
+
+                value = cls.container({
+                    path.encode(): cls.container({key: value})
+                })
 
             else:
-                
+
                 path.extend(key)
-                
+
                 if isinstance(value, cls.container) and len(value):
                     value = cls._collapse(value, func=func, _parent_path=path)
                 else:
@@ -320,16 +327,16 @@ class NestedContainer(abc.ABC, dict):
         return collapsed
 
     def collapse(self, path=None, func=None):
-        """ Collapse instance data at path and return. Use func to determine 
+        """ Collapse instance data at path and return. Use func to determine
         if a level of nested data should be collapsed or not.
         """
-        
+
         return self._collapse(self.get(path), func=func)
 
     def update(self, data, path=None):
         """ Update instance data at path with data.
         """
-        
+
         haystack = self.ref(path)
 
         if isinstance(data, self.__class__):
@@ -340,7 +347,7 @@ class NestedContainer(abc.ABC, dict):
         haystack.update(data)
 
     def set(self, path, value, create=True):
-        """ Set value at path in instance data. If create is True, create 
+        """ Set value at path in instance data. If create is True, create
         missing keys while trying to resolve path.
         """
 
@@ -348,15 +355,15 @@ class NestedContainer(abc.ABC, dict):
             path = self.path(path)
 
         haystack = self.ref(path.head or None, create=create)
-        
+
         needle = path[-1]
         haystack[needle] = value
 
     def push(self, path, value, create=True):
-        """ Push value to list at path in instance data. If create is True and 
-        key for final path segment is not set, create key and create value as 
-        empty list and append value to list. If create is True and key for 
-        final path segment is wrong type, create value as list with existing 
+        """ Push value to list at path in instance data. If create is True and
+        key for final path segment is not set, create key and create value as
+        empty list and append value to list. If create is True and key for
+        final path segment is wrong type, create value as list with existing
         value and append value to list.
         """
 
@@ -405,8 +412,8 @@ class NestedContainer(abc.ABC, dict):
         return True
 
     def unset(self, path, cleanup=False):
-        """ Remove value and last key at path. If cleanup is True and key 
-        removal results in empty container, recursively remove empty 
+        """ Remove value and last key at path. If cleanup is True and key
+        removal results in empty container, recursively remove empty
         containers in reverse order of path.
         """
 
@@ -429,36 +436,36 @@ class NestedContainer(abc.ABC, dict):
 
 
 class NestedDict(NestedContainer):
-    """ This class implements tuple path notation in use with the dict 
+    """ This class implements tuple path notation in use with the dict
     container type.
     """
-    
+
     path = TuplePath
     container = dict
 
 
 class NestedOrderedDict(NestedContainer):
-    """ This class implements tuple path notation in use with the OrderedDict 
+    """ This class implements tuple path notation in use with the OrderedDict
     container type.
     """
-    
+
     path = TuplePath
     container = collections.OrderedDict
 
 
 class DelimitedDict(NestedContainer):
-    """ This class implements delimited string path notation in use with the 
+    """ This class implements delimited string path notation in use with the
     dict container type.
     """
-    
+
     path = DelimitedStrPath
     container = dict
 
 
 class DelimitedOrderedDict(NestedContainer):
-    """ This class implements delimited string path notation in use with the 
+    """ This class implements delimited string path notation in use with the
     OrderedDict container type.
     """
-    
+
     path = DelimitedStrPath
     container = collections.OrderedDict
