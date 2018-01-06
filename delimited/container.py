@@ -290,25 +290,28 @@ class NestedContainer(abc.ABC, dict):
         return expanded
 
     @classmethod
-    def _collapse(cls, data, _path=None, func=None):
+    def _collapse(cls, data, func=None, _parent_path=None):
         """ Recursively collapse expanded nested data and return.
         """
 
         collapsed = cls.container()
-        path = _path.copy() if _path is not None else cls.path()
+        path = _parent_path.copy() if _parent_path is not None else cls.path()
 
         for key, value in data.items():
 
-            if callable(func) and func(key):
+            if callable(func) and func(key, value):
+                
                 if isinstance(value, cls.container) and len(value):
                     value = cls._collapse(value, func=func)
-                value = {path.encode(): {key: value}}
+                    
+                value = cls.container({path.encode(): cls.container({key: value})})
 
             else:
-
+                
                 path.extend(key)
+                
                 if isinstance(value, cls.container) and len(value):
-                    value = cls._collapse(value, _path=path, func=func)
+                    value = cls._collapse(value, func=func, _parent_path=path)
                 else:
                     value = {path.encode(): value}
 
