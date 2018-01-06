@@ -151,6 +151,11 @@ class NestedContainer(abc.ABC, dict):
         for value in self.data.values():
             yield value
 
+    def annotate(self, e, message):
+        e.args[0] = 
+        
+        err.args = (err.args[0] + " hello",) + err.args[1:
+
     def ref(self, path=None, create=False):
         """ Return a reference to nested data at path. If create is True and
         missing key(s) are encountered while trying to resolve path, create
@@ -174,17 +179,17 @@ class NestedContainer(abc.ABC, dict):
             try:
                 haystack = haystack[needle]
 
-            except KeyError:
+            except KeyError as e:
                 if create:
                     haystack[needle] = self.container()
                     haystack = haystack[needle]
 
                 else:
-                    # TODO: custom exception
+                    e.args[0] = f"{needle} in {path}"
                     raise
 
             except TypeError:
-                # TODO: custom exception
+                e.args[0] = f"{needle} in {path}"
                 raise
 
         return haystack
@@ -200,11 +205,6 @@ class NestedContainer(abc.ABC, dict):
         except KeyError:
             if args:
                 return args[0]
-            # TODO: custom exception
-            raise
-
-        except TypeError:
-            # TODO: custom exception
             raise
 
     def has(self, path=None):
@@ -381,6 +381,7 @@ class NestedContainer(abc.ABC, dict):
                 haystack[needle] = []
                 haystack[needle].append(value)
             else:
+                e.args[0] = f"{needle} in {path}"
                 raise
 
         except AttributeError as e:
@@ -388,6 +389,7 @@ class NestedContainer(abc.ABC, dict):
                 haystack[needle] = [haystack[needle]]
                 haystack[needle].append(value)
             else:
+                e.args[0] = f"{needle} in {path}"
                 raise
 
         return True
