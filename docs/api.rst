@@ -383,6 +383,8 @@ DelimitedDict
     
     :param data: The nested data to collapse
     :type data: dict
+    :param func: A function used to determine whether to collapse a level of nested data
+    :type func: function
     :returns: Collapsed data
     :rtype: dict
     
@@ -397,10 +399,23 @@ DelimitedDict
       }
       
       mycontainer = DelimitedDict()
-      mycontainer._expand(data)
+      mycontainer._collapse(data)
       
       # returns {
       #   "key1.key2.key3": "value"
+      # }
+      
+      def should_collapse(path, value):
+        if path == "key3":
+          return False
+        return True
+        
+      mycontainer._collapse(data, func=should_collapse)
+      
+      # returns {
+      #   "key1.key2": {
+      #     "key3": "value"
+      #   }
       # }
 
   .. py:method:: items()

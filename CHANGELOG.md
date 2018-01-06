@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [ 0.0.5 ] 2018-01-05
+
+### Added
+
+* `value` added to `func` param in `NestedContainer._collapse` method
+* fixed errors in docs
+
 ## [ 0.0.4 ] 2018-01-05
 
 ### Changed

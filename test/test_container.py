@@ -9,7 +9,7 @@ from delimited.container import NestedDict
 from delimited.container import DelimitedDict
 
 
-class TestNestedDict(unittest.TestCase):
+class TestNestedContainer(unittest.TestCase):
 
     # __init__
 
@@ -481,7 +481,7 @@ class TestNestedDict(unittest.TestCase):
         a = NestedDict({("k1", "k2", "$foo", "k3", "k4"): "v"})
 
         def detect_mongo_operator(path, value):
-            return path[0][0] == "$"
+            return path[0] == "$"
 
         b = a.collapse(func=detect_mongo_operator)
         self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
