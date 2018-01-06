@@ -222,6 +222,19 @@ DelimitedStrPath
       mypath = DelimitedStrPath("key1.key2.key3")
       mypath.copy()
       # returns instance of DelimitedStrPath
+      
+  .. py:method:: clone()
+  
+    Return an isntance of :py:class:`DelimitedStrPath` with its :attr:`segments` set to a reference to this instances :attr:`segments`.
+    
+    ::
+      
+      mypath1 = DelimitedStrPath("key1.key2.key3")
+      mypath2 = mypath1.clone()
+      mypath2[1] = "foo"
+      print(mypath1)
+      
+      # returns "key1.foo.key3"
 
   .. py:method:: encode()
 
@@ -379,7 +392,7 @@ DelimitedDict
 
   .. py:method:: _collapse()
   
-    Recursively collapse nested data and return
+    Recursively collapse nested data and return. The param ``func`` should accept two params, ``key`` and ``value`` which will be the key of the current level of nested data being collapsed and the value of that key respectively.
     
     :param data: The nested data to collapse
     :type data: dict
