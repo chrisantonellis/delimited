@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API &mdash; delimited 0.0.5 documentation</title>
+  <title>API &mdash; delimited 0.0.6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="delimited 0.0.5 documentation" href="index.html"/>
+    <link rel="top" title="delimited 0.0.6 documentation" href="index.html"/>
         <link rel="prev" title="Usage" href="usage.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.0.5
+                0.0.6
               </div>
             
           
@@ -485,7 +485,7 @@
 <dl class="method">
 <dt id="DelimitedStrPath.copy">
 <code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DelimitedStrPath.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an instance of <a class="reference internal" href="#DelimitedStrPath" title="DelimitedStrPath"><code class="xref py py-class docutils literal"><span class="pre">DelimitedStrPath</span></code></a> with its <a class="reference internal" href="#DelimitedStrPath.segments" title="DelimitedStrPath.segments"><code class="xref py py-attr docutils literal"><span class="pre">segments</span></code></a> set to a shallow copy of this instances <a class="reference internal" href="#DelimitedStrPath.segments" title="DelimitedStrPath.segments"><code class="xref py py-attr docutils literal"><span class="pre">segments</span></code></a>.</p>
+<dd><p>Return an instance of <a class="reference internal" href="#DelimitedStrPath" title="DelimitedStrPath"><code class="xref py py-class docutils literal"><span class="pre">DelimitedStrPath</span></code></a> with its <a class="reference internal" href="#DelimitedStrPath.segments" title="DelimitedStrPath.segments"><code class="xref py py-attr docutils literal"><span class="pre">segments</span></code></a> set to a copy of this instances <a class="reference internal" href="#DelimitedStrPath.segments" title="DelimitedStrPath.segments"><code class="xref py py-attr docutils literal"><span class="pre">segments</span></code></a>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mypath</span> <span class="o">=</span> <span class="n">DelimitedStrPath</span><span class="p">(</span><span class="s2">&quot;key1.key2.key3&quot;</span><span class="p">)</span>
 <span class="n">mypath</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="c1"># returns instance of DelimitedStrPath</span>
@@ -879,30 +879,8 @@
 </dd></dl>
 
 <dl class="method">
-<dt id="DelimitedDict.spawn">
-<code class="descname">spawn</code><span class="sig-paren">(</span><em>path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#DelimitedDict.spawn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new instance of self with its <a class="reference internal" href="#DelimitedDict.data" title="DelimitedDict.data"><code class="xref py py-attr docutils literal"><span class="pre">data</span></code></a> set to a reference of this instances <a class="reference internal" href="#DelimitedDict.data" title="DelimitedDict.data"><code class="xref py py-attr docutils literal"><span class="pre">data</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>str</em>) – The path to resolve</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">instance of <a class="reference internal" href="#DelimitedDict" title="DelimitedDict"><code class="xref py py-class docutils literal"><span class="pre">DelimitedDict</span></code></a></td>
-</tr>
-</tbody>
-</table>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mycontainer</span> <span class="o">=</span> <span class="n">DelimitedDict</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
-<span class="n">myconatiner</span><span class="o">.</span><span class="n">spawn</span><span class="p">()</span>
-
-<span class="c1"># returns instance of DelimitedDict</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="method">
-<dt id="DelimitedDict.clone">
-<code class="descname">clone</code><span class="sig-paren">(</span><em>path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#DelimitedDict.clone" title="Permalink to this definition">¶</a></dt>
+<dt id="DelimitedDict.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><em>path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#DelimitedDict.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a new instance of self with its <a class="reference internal" href="#DelimitedDict.data" title="DelimitedDict.data"><code class="xref py py-attr docutils literal"><span class="pre">data</span></code></a> set to a deep copy of this instances <a class="reference internal" href="#DelimitedDict.data" title="DelimitedDict.data"><code class="xref py py-attr docutils literal"><span class="pre">data</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -913,6 +891,26 @@
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">New instance with copied data</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#DelimitedDict" title="DelimitedDict"><code class="xref py py-class docutils literal"><span class="pre">DelimitedDict</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">mycontainer</span> <span class="o">=</span> <span class="n">DelimitedDict</span><span class="p">({</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
+<span class="n">mycontainer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># returns instance of DelimitedDict</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="DelimitedDict.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DelimitedDict.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new instance of self with its <a class="reference internal" href="#DelimitedDict.data" title="DelimitedDict.data"><code class="xref py py-attr docutils literal"><span class="pre">data</span></code></a> set to a reference of this instances <a class="reference internal" href="#DelimitedDict.data" title="DelimitedDict.data"><code class="xref py py-attr docutils literal"><span class="pre">data</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">instance of <a class="reference internal" href="#DelimitedDict" title="DelimitedDict"><code class="xref py py-class docutils literal"><span class="pre">DelimitedDict</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -1203,7 +1201,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.5',
+            VERSION:'0.0.6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
