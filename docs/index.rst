@@ -1,5 +1,5 @@
-Delimited
-=========
+Delimited |version|
+===================
 
 Delimited defines types that allow for accessing and modifying nested data.
 
