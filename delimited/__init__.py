@@ -1,4 +1,4 @@
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 __title__ = "delimited"
 __summary__ = ("Defines types that allow for accessing and modifying "
                "nested data")

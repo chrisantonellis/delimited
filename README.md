@@ -1,8 +1,8 @@
-# Delimited 0.0.5
+# Delimited 0.0.6
 
 [![Travis](https://img.shields.io/travis/chrisantonellis/delimited.svg?style=flat-square)](https://img.shields.io/travis/USER/REPO.svg)
 [![Coveralls github](https://img.shields.io/coveralls/github/chrisantonellis/delimited.svg?style=flat-square)](https://coveralls.io/github/chrisantonellis/delimited)
-[![PyPI](https://img.shields.io/pypi/v/delimited.svg?style=flat-square)](https://pypi.python.org/pypi/delimited/0.0.5)
+[![PyPI](https://img.shields.io/pypi/v/delimited.svg?style=flat-square)](https://pypi.python.org/pypi/delimited/)
 ![Somethin](https://img.shields.io/badge/code%20style-pep8-brightgreen.svg?style=flat-square)
 
 Delimited defines classes that allow for accessing and modifying nested data.
