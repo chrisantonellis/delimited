@@ -215,7 +215,7 @@ DelimitedStrPath
 
   .. py:method:: copy()
 
-    Return an instance of :py:class:`DelimitedStrPath` with its :attr:`segments` set to a shallow copy of this instances :attr:`segments`.
+    Return an instance of :py:class:`DelimitedStrPath` with its :attr:`segments` set to a copy of this instances :attr:`segments`.
     
     ::
       
@@ -519,22 +519,7 @@ DelimitedDict
       mycontainer.has("foo")
       # returns False
 
-  .. py:method:: spawn(path=None)
-  
-    Return a new instance of self with its :attr:`data` set to a reference of this instances :attr:`data`.
-    
-    :param path: The path to resolve
-    :type path: str
-    :rtype: instance of :class:`DelimitedDict`
-    
-    ::
-      
-      mycontainer = DelimitedDict({"key": "value"})
-      myconatiner.spawn()
-      
-      # returns instance of DelimitedDict
-      
-  .. py:method:: clone(path=None)
+  .. py:method:: copy(path=None)
   
     Return a new instance of self with its :attr:`data` set to a deep copy of this instances :attr:`data`.
     
@@ -542,6 +527,19 @@ DelimitedDict
     :type path: str
     :returns: New instance with copied data
     :rtype: :class:`DelimitedDict`
+    
+    ::
+      
+      mycontainer = DelimitedDict({"key": "value"})
+      mycontainer.copy()
+      
+      # returns instance of DelimitedDict
+
+  .. py:method:: clone()
+  
+    Return a new instance of self with its :attr:`data` set to a reference of this instances :attr:`data`.
+    
+    :rtype: instance of :class:`DelimitedDict`
     
     ::
       
