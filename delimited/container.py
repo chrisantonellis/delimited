@@ -151,11 +151,6 @@ class NestedContainer(abc.ABC, dict):
         for value in self.data.values():
             yield value
 
-    def annotate(self, e, message):
-        e.args[0] = 
-        
-        err.args = (err.args[0] + " hello",) + err.args[1:
-
     def ref(self, path=None, create=False):
         """ Return a reference to nested data at path. If create is True and
         missing key(s) are encountered while trying to resolve path, create
