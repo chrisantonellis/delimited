@@ -325,6 +325,15 @@ class TestDelimitedStrPath(unittest.TestCase):
     def test___decode(self):
         a = DelimitedStrPath()
         self.assertEqual(a._decode("k1.k2.k3"), ["k1", "k2", "k3"])
+        
+    # __repr__
+    
+    def test____repr__(self):
+        a = DelimitedStrPath()
+        self.assertEqual(repr(a), "DelimitedStrPath('')")
+        
+        a("k1.k2.k3")
+        self.assertEqual(repr(a), "DelimitedStrPath('k1.k2.k3')")
 
 
 if __name__ == "__main__":

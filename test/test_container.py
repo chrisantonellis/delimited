@@ -480,7 +480,7 @@ class TestNestedDict(unittest.TestCase):
     def test_collapse__function_param(self):
         a = NestedDict({("k1", "k2", "$foo", "k3", "k4"): "v"})
 
-        def detect_mongo_operator(path):
+        def detect_mongo_operator(path, value):
             return path[0][0] == "$"
 
         b = a.collapse(func=detect_mongo_operator)
