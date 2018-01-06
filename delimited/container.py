@@ -180,11 +180,11 @@ class NestedContainer(abc.ABC, dict):
                     haystack = haystack[needle]
 
                 else:
-                    e.args[0] = f"{needle} in {path}"
+                    e.args = (f"{needle} in {path}",) + e.args[1:]
                     raise
 
-            except TypeError:
-                e.args[0] = f"{needle} in {path}"
+            except TypeError as e:
+                e.args = (f"{needle} in {path}",) + e.args[1:]
                 raise
 
         return haystack
@@ -376,7 +376,7 @@ class NestedContainer(abc.ABC, dict):
                 haystack[needle] = []
                 haystack[needle].append(value)
             else:
-                e.args[0] = f"{needle} in {path}"
+                e.args = (f"{needle} in {path}",) + e.args[1:]
                 raise
 
         except AttributeError as e:
@@ -384,7 +384,7 @@ class NestedContainer(abc.ABC, dict):
                 haystack[needle] = [haystack[needle]]
                 haystack[needle].append(value)
             else:
-                e.args[0] = f"{needle} in {path}"
+                e.args = (f"{needle} in {path}",) + e.args[1:]
                 raise
 
         return True
