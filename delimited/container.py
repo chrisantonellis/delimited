@@ -15,6 +15,32 @@ from delimited.path import TuplePath
 from delimited.path import DelimitedStrPath
 
 
+
+class ListIndex(object):
+    def __init__(self, value):
+        if not isinstance(value, int):
+            raise TypeError(value)
+        self.value = value
+        
+    def __str__(self):
+        return str(self.value)
+        
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.value})'
+
+
+class NestedList(abc.ABC, list):
+
+    path = None
+    container = list
+    
+    def __init__(self, data=None):
+        self(data)
+        
+    def __call__(self, data=None):
+        pass
+    
+
 class NestedContainer(abc.ABC, dict):
     """ The abstract base class for NestedContainer objects. When subclassing
     NestedContainer the path and container attributes must be overridden with a
@@ -91,7 +117,7 @@ class NestedContainer(abc.ABC, dict):
         cannot be resolved.
         """
 
-        return self.ref(path)
+        return self._ref(path)
 
     def __setitem__(self, path, value):
         """ Set data at path to value.
@@ -151,7 +177,14 @@ class NestedContainer(abc.ABC, dict):
         for value in self.data.values():
             yield value
 
-    def ref(self, path=None, create=False):
+    @classmethod
+    def _wrap(cls, value):
+        return cls(value) if isinstance(value, cls.container) else value
+
+    def ref(self, *args, **kwargs):
+        return self._wrap(self._ref(*args, **kwargs))
+
+    def _ref(self, path=None, create=False):
         """ Return a reference to nested data at path. If create is True and
         missing key(s) are encountered while trying to resolve path, create
         the missing key(s) using an instance of self.container as the value.
@@ -171,6 +204,10 @@ class NestedContainer(abc.ABC, dict):
         # for each needle
         for needle in path:
 
+            # handle list indexes
+            if isinstance(needle, list):
+                needle = needle[0]
+
             try:
                 haystack = haystack[needle]
 
@@ -189,14 +226,17 @@ class NestedContainer(abc.ABC, dict):
 
         return haystack
 
-    def get(self, path=None, *args):
+    def get(self, *args, **kwargs):
+        return self._wrap(self._get(*args, **kwargs))
+
+    def _get(self, path=None, *args):
         """ Return a copy of nested data at path. First value of args is
         considered the default value, and if self.ref call raises a KeyError,
         the default value will be returned.
         """
 
         try:
-            return copy.deepcopy(self.ref(path))
+            return copy.deepcopy(self._ref(path))
         except KeyError:
             if args:
                 return args[0]
@@ -207,7 +247,7 @@ class NestedContainer(abc.ABC, dict):
         """
 
         try:
-            return bool(self.ref(path))
+            return bool(self._ref(path))
         except KeyError:
             return False
 
@@ -216,7 +256,7 @@ class NestedContainer(abc.ABC, dict):
         this instances data.
         """
 
-        return self.__class__(self.get(path))
+        return self.__class__(self._get(path))
 
     def clone(self, path=None):
         """ Return a new instance of self with its data set to a reference of
@@ -224,9 +264,11 @@ class NestedContainer(abc.ABC, dict):
         """
 
         spawn = self.__class__()
-        spawn.data = self.ref(path)
+        spawn.data = self._ref(path)
         return spawn
 
+    # TODO rename recursive merge
+    # TODO should return cls.container
     @classmethod
     def _merge(cls, a, b):
         """ Recursively merge container a into a deep copy of container b
@@ -245,6 +287,7 @@ class NestedContainer(abc.ABC, dict):
 
         return b
 
+    # TODO: should return instance of cls
     def merge(self, data, path=None):
         """ Merge data with a copy of instance data at path and return
         merged data. Will accept instance of self or instance of
@@ -254,8 +297,9 @@ class NestedContainer(abc.ABC, dict):
         if isinstance(data, self.__class__):
             data = data.data
         elif isinstance(data, self.container):
-            data = self.__class__(data).data
-        return self._merge(data, self.get(path))
+            data = self._expand(data)
+            
+        return self._merge(data, self._get(path))
 
     @classmethod
     def _expand(cls, data):
@@ -277,11 +321,25 @@ class NestedContainer(abc.ABC, dict):
 
                 # first key
                 if i == 1:
-                    expanded_key = cls.container({key: value})
+                    
+                    if isinstance(key, ListIndex):
+                        temp = ([None] * key.value)
+                        temp[key.value] = value
+                        expanded_value = temp
+                        
+                    else:
+                        expanded_key = cls.container({key: value})
 
                 # after first key
                 elif i > 1:
-                    expanded_key = cls.container({key: expanded_key})
+                    
+                    if isinstance(key, ListIndex):
+                        temp = ([None] * (key.value + 1))
+                        temp[key.value] = expanded_key
+                        expanded_key = temp
+                        
+                    else:
+                        expanded_key = cls.container({key: expanded_key})
 
                 # last key, merge with other keys
                 if i == len(path):
@@ -297,27 +355,54 @@ class NestedContainer(abc.ABC, dict):
         collapsed = cls.container()
         path = _parent_path.copy() if _parent_path is not None else cls.path()
 
-        for key, value in data.items():
-
-            if callable(func) and func(key, value):
-
-                if isinstance(value, cls.container) and len(value):
-                    value = cls._collapse(value, func=func)
-
-                value = cls.container({
-                    path.encode(): cls.container({key: value})
-                })
-
-            else:
-
-                path.extend(key)
-
-                if isinstance(value, cls.container) and len(value):
-                    value = cls._collapse(value, func=func, _parent_path=path)
+        if isinstance(data, list):
+            
+            for i, item in enumerate(data):
+                
+                if callable(func) and func(None, item):
+                    
+                    if isinstance(item, (list, cls.container)) and len(item):
+                        item = cls._collapse(item, func=func)
+                    
+                    item = cls.container({
+                        path.encode(): [item]
+                    })
+                    
                 else:
-                    value = {path.encode(): value}
+                
+                    path.extend(ListIndex(i))
+                    
+                    if isinstance(item, (list, cls.container)) and len(item):
+                        item = cls._collapse(item, func=func, _parent_path=path)
+                        
+                    else:
+                        item = {path.encode(): item}
+                 
+                collapsed.update(item)
+            
+        elif isinstance(data, cls.container):
 
-            collapsed.update(value)
+            for key, value in data.items():
+
+                if callable(func) and func(key, value):
+
+                    if isinstance(value, (list, cls.container)) and len(value):
+                        value = cls._collapse(value, func=func)
+
+                    value = cls.container({
+                        path.encode(): cls.container({key: value})
+                    })
+
+                else:
+
+                    path.extend(key)
+
+                    if isinstance(value, (list, cls.container)) and len(value):
+                        value = cls._collapse(value, func=func, _parent_path=path)
+                    else:
+                        value = {path.encode(): value}
+
+                collapsed.update(value)
 
         return collapsed
 
@@ -326,13 +411,13 @@ class NestedContainer(abc.ABC, dict):
         if a level of nested data should be collapsed or not.
         """
 
-        return self._collapse(self.get(path), func=func)
+        return self._collapse(self._get(path), func=func)
 
     def update(self, data, path=None):
         """ Update instance data at path with data.
         """
 
-        haystack = self.ref(path)
+        haystack = self._ref(path)
 
         if isinstance(data, self.__class__):
             data = data.data
@@ -349,7 +434,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path.head or None, create=create)
+        haystack = self._ref(path.head or None, create=create)
 
         needle = path[-1]
         haystack[needle] = value
@@ -365,7 +450,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path.head, create=create)
+        haystack = self._ref(path.head, create=create)
         needle = path[-1]
 
         try:
@@ -397,7 +482,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path.head or None)
+        haystack = self._ref(path.head or None)
         needle = path[-1]
 
         haystack[needle].remove(value)
@@ -417,7 +502,7 @@ class NestedContainer(abc.ABC, dict):
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        haystack = self.ref(path.head or None)
+        haystack = self._ref(path.head or None)
         needle = path[-1]
 
         del haystack[needle]
@@ -426,7 +511,7 @@ class NestedContainer(abc.ABC, dict):
             for i, needle in enumerate(path, 1):
                 if i < len(path):
                     cleanup_path = path[:(len(path) - i)]
-                    if self.ref(cleanup_path) == self.container():
+                    if self._ref(cleanup_path) == self.container():
                         self.unset(cleanup_path)
 
         return True

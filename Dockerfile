@@ -12,4 +12,5 @@ RUN pip install --editable .[test,docs]
 ADD ./test /test
 
 # run
+WORKDIR /
 CMD ["tail", "-f", "/dev/null"]
