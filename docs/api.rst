@@ -687,14 +687,6 @@ DelimitedDict
       mycontainer.get()
       
       # returns {}
-    
-
-DelimitedOrderedDict
-^^^^^^^^^^^^^^^^^^^^
-
-.. py:class:: DelimitedOrderedDict(data=None)
-  
-  This class implements :ref:`delimited string path notation <delimited_string_path_notation>` in use with the ``OrderedDict`` container type.
 
 NestedDict
 ^^^^^^^^^^
@@ -702,10 +694,3 @@ NestedDict
 .. py:class:: NestedDict(data=None)
   
   This class implements :ref:`tuple path notation <tuple_path_notation>` in use with the ``dict`` container type.
-
-NestedOrderedDict  
-^^^^^^^^^^^^^^^^^
-
-.. py:class:: NestedOrderedDict(data=None)
-  
-  This class implements :ref:`tuple path notation <tuple_path_notation>` in use with the ``OrderedDict`` container type.

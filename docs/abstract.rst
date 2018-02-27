@@ -16,7 +16,7 @@ This is overly verbose and lacks the functionality needed to effectively interac
   
   mydict.get("exterior.color.trim") # much better
 
-**Delimited** provides :py:class:`Path` classes to represent paths to nested data using tuples or strings, and :py:class:`NestedContainer` classes that emulate the native :class:`dict` and :class:`collections.OrderedDict` types.
+**Delimited** provides :py:class:`Path` classes to represent paths to nested data using tuples or strings, and :py:class:`NestedContainer` classes that emulate the native :class:`dict` type.
 
 Terms
 -----

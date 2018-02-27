@@ -52,4 +52,4 @@ This is overly verbose and lacks the functionality needed to effectively interac
   # returns {"key1.key2.key3": "value"}
 ```
 
-Delimited provides `Path` classes to represent paths to nested data using tuples or strings, and `NestedContainer` classes that emulate the native `dict` and `collections.OrderedDict` types. Check out the [documentation](https://chrisantonellis.github.io/delimited/) to learn more.
+Delimited provides `Path` classes to represent paths to nested data using tuples or strings, and `NestedContainer` classes that emulate the native `dict` type. Check out the [documentation](https://chrisantonellis.github.io/delimited/) to learn more.

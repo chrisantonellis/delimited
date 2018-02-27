@@ -9,6 +9,8 @@ which a path to nested data can be defined using one or more path segments.
 import abc
 import copy
 
+from delimited.index import SequenceIndex
+
 
 class Path(abc.ABC):
     """ The abstract base class for Path objects. When subclassing Path the
@@ -52,10 +54,8 @@ class Path(abc.ABC):
         """
 
         if isinstance(other, self.__class__):
-            value = self.segments == other.segments
-        else:
-            value = self.encode() == other
-        return value
+            return self.segments == other.segments
+        return self.encode() == other
 
     def __ne__(self, other):
         """ Compare inequality with instance of self or path in collapsed path
@@ -99,6 +99,7 @@ class Path(abc.ABC):
         """
 
         for k in self.segments:
+            # yield k.index if isinstance(k, SequenceIndex) else k
             yield k
 
     def __reversed__(self):
@@ -106,6 +107,7 @@ class Path(abc.ABC):
         """
 
         for k in self.segments[::-1]:
+            # yield k.index if isinstance(k, SequenceIndex) else k
             yield k
 
     def __contains__(self, key):
@@ -159,10 +161,13 @@ class Path(abc.ABC):
         except for the last one. If there is only one segment return None
         """
 
-        value = self.segments[:-1]
-        if isinstance(value, list):
-            value = self._encode(value)
-        return value or None
+        h = self.segments[:-1]
+        return self._encode(h) if isinstance(h, list) and h else h or None
+    
+    @property
+    def tail(self):
+
+        return self.segments[-1]
 
     def append(self, value):
         """ Add value to the end of path segments. Accepts a path segment.
