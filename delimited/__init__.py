@@ -14,9 +14,3 @@ __license__ = "MIT License"
 
 NestedDict, NestedList = NestedType("nested", TuplePath)
 DelimitedDict, DelimitedList = NestedType("delimited", DelimitedStrPath)
-
-"""
-collapsible
-different levels are accessible
-
-"""
