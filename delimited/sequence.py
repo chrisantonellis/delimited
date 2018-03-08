@@ -5,28 +5,73 @@ delimited.sequence
 This module defines...
 """
 
-import abc
-import copy
-
-from delimited import NestedContainer
-
-from delimited.index import ListIndex
-from delimited.path import TuplePath
-from delimited.path import DelimitedStrPath
+# index
 
 
-class NestedSequence(NestedContainer):
-    index = None
+class SequenceIndex(object):
+    sequence = None
+    
+    def __init__(self, index):
+        if not isinstance(index, int):
+            raise TypeError(index)
+        self.index = index
         
-    def __init__(self, *args, **kwargs):
-        self.sequence = self.__class__
-        super().__init__(*args, **kwargs)
+    def __str__(self):
+        return str(self.index)
+        
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.index})'
+        
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.index == other.index
+        if isinstance(other, int):
+            return self.index == other
+        return False
+        
+    def __ne__(self, other):
+        return not self.__eq__(other)
+        
+    def __hash__(self):
+        return hash(str(self.index))
+
+
+class ListIndex(SequenceIndex):
+    sequence = list
+
+
+# value
+
+
+class SequenceValue(object):
+    pass
+
+
+# sequence
+
+
+class NestedSequence(object):
+    sequenceindex = None
         
     def __add__(self, other):
-        self.data = self.data + self.container(other)
+        
+        if isinstance(other, self.__class__):
+            data = other.data
+        elif isinstance(other, self.container):
+            data = other
+        
+        return self.__class__(self.data + data)
         
     def __iadd__(self, other):
-        return self.__add__(other)
+        
+        if isinstance(other, self.__class__):
+            data = other.data
+        elif isinstance(other, self.container):
+            data = other
+            
+        self.data += other
+        
+        return self
         
     def __iter__(self):
         for v in self.data:
@@ -39,9 +84,12 @@ class NestedSequence(NestedContainer):
     def append(self, value):
         return self.data.append(value)
         
-    def extend(self, data):
-        if isinstance(data, self.__class__):
-            data = data.data
+    def extend(self, other):
+        if isinstance(other, self.__class__):
+            data = other.data
+        elif isinstance(other, self.container):
+            data = other
+        
         return self.data.extend(data)
         
     def insert(self, i, value):
@@ -64,25 +112,3 @@ class NestedSequence(NestedContainer):
         
     def reverse(self):
         self.data = self.data[::-1]
-
-
-class NestedList(NestedSequence, list):
-    container = list
-    index = ListIndex
-    path = TuplePath
-    
-    def __init__(self, *args, **kwargs):
-        from delimited.mapping import NestedDict
-        self.mapping = NestedDict
-        super().__init__(*args, **kwargs)
-    
-
-class DelimitedList(NestedSequence, list):
-    container = list
-    index = ListIndex
-    path = DelimitedStrPath
-    
-    def __init__(self, *args, **kwargs):
-        from delimited.mapping import DelimitedDict
-        self.mapping = DelimitedDict
-        super().__init__(*args, **kwargs)

@@ -4,10 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [ 0.0.6 ] 2018-03-08
 
 ### Added
 * Custom message injected into `KeyError`, `TypeError`, `AttributeError`
+* Support for nested sequences
+  * SequenceIndex, ListIndex types
+  * SequenceValue type
+  * NestedSequence, NestedList types
+* NestedType metaclass
 
 ## [ 0.0.6 ] 2018-01-06
 

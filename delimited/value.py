@@ -1,3 +1,0 @@
-
-class SequenceValue(object):
-    pass

@@ -7,7 +7,58 @@ from delimited.path import TuplePath
 from delimited.path import DelimitedStrPath
 
 from delimited.sequence import ListIndex
-from delimited.sequence import NestedList
+from delimited.sequence import SequenceValue
+
+from delimited import NestedList
+
+
+class TestListIndex(unittest.TestCase):
+
+    # __init__
+
+    def test____init__(self):
+        a = ListIndex(0)
+        self.assertEqual(a.index, 0)
+        
+    def test____init____raises_TypeError(self):
+        with self.assertRaises(TypeError):
+            a = ListIndex("foo")
+
+    # __str__
+    
+    def test____str__(self):
+        a = ListIndex(0)
+        self.assertEqual(str(a), "0")
+        
+    # __repr__
+    
+    def test____repr__(self):
+        a = ListIndex(0)
+        self.assertEqual(repr(a), "ListIndex(0)")
+        
+    # __eq__
+    
+    def test___eq____same_type(self):
+        self.assertEqual(ListIndex(0), ListIndex(0))
+        
+    def test___eq____different_type(self):
+        self.assertEqual(ListIndex(0), 0)
+        
+    # __ne__
+    
+    def test___ne____same_type(self):
+        self.assertNotEqual(ListIndex(0), ListIndex(1))
+        
+    def test___ne____different_type(self):
+        self.assertNotEqual(ListIndex(0), 1)
+        self.assertNotEqual(ListIndex(0), "foo")
+        
+    # __hash__
+    
+    def test___hash__(self):
+        a1 = hash(ListIndex(0))
+        a2 = hash(ListIndex(0))
+        self.assertTrue(a1 == a2)
 
 
 class TestNestedList(unittest.TestCase):
@@ -21,6 +72,10 @@ class TestNestedList(unittest.TestCase):
     def test___init____list_arg(self):
         a = NestedList(["v"])
         self.assertEqual(a, ["v"])
+    
+    def test___init____raises_TypeError(self):
+        with self.assertRaises(TypeError):
+            a = NestedList("foo")
     
     # __call__
     
@@ -80,6 +135,12 @@ class TestNestedList(unittest.TestCase):
         a1 = NestedList(["v"])
         a2 = NestedList(["v"])
         self.assertFalse(a1 != a2)
+    
+    # __str__
+    
+    def test___str__(self):
+        a = NestedList(["v"])
+        self.assertEqual(str(a), "['v']")
     
     # __hash__
     
@@ -161,6 +222,110 @@ class TestNestedList(unittest.TestCase):
         a1.data[0][0][0] = "bar"
         self.assertNotEqual(a1, a2)
     
+    # __add__
+    
+    def test___add____list_arg(self):
+        a = NestedList(["v"])
+        b = a + ["v"]
+        self.assertEqual(b, ["v", "v"])
+        
+    def test___add____NestedList_arg(self):
+        a = NestedList(["v"])
+        b = a + NestedList(["v"])
+        self.assertEqual(b, ["v", "v"])
+        
+    # __iadd__
+    
+    def test___iadd____list_arg(self):
+        a = NestedList(["v"])
+        a += ["v"]
+        self.assertEqual(a, ["v", "v"])
+        
+    def test___iadd____NestedList_arg(self):
+        a = NestedList(["v"])
+        a += NestedList(["v"])
+        self.assertEqual(a, ["v", "v"])
+        
+    # __iter__
+    
+    def test___iter__(self):
+        a = NestedList(["v", "v", "v"])
+        for v in a:
+            self.assertEqual(v, "v")
+        
+    # __reversed__
+    
+    def test___reversed__(self):
+        a = NestedList([3, 2, 1])
+        for i, v in enumerate(reversed(a), 1):
+            self.assertEqual(i, v)
+        
+    # append
+    
+    def test_append(self):
+        a = NestedList(["v"])
+        a.append("v")
+        self.assertEqual(a, ["v", "v"])
+        
+    # extend
+    
+    def test_extend__list_arg(self):
+        a = NestedList(["v"])
+        a.extend(["v"])
+        self.assertEqual(a, ["v", "v"])
+        
+    def test_extend__NestedList_arg(self):
+        a = NestedList(["v"])
+        a.extend(NestedList(["v"]))
+        self.assertEqual(a, ["v", "v"])
+    
+    # insert
+    
+    def test_insert(self):
+        a = NestedList(["bar"])
+        a.insert(0, "foo")
+        self.assertEqual(a, ["foo", "bar"])
+    
+    # remove
+    
+    def test_remove(self):
+        a = NestedList(["v"])
+        a.remove("v")
+        self.assertEqual(a, [])
+        
+    # pop
+    
+    def test_pop(self):
+        a = NestedList(["v"])
+        self.assertEqual(a.pop(), "v")
+        self.assertEqual(a, [])
+        
+    # clear
+    
+    def test_clear(self):
+        a = NestedList(["v"])
+        a.clear()
+        self.assertEqual(a, [])
+        
+    # index
+    
+    def test_index(self):
+        a = NestedList(["v"])
+        self.assertEqual(a.index("v"), 0)
+        
+    # count
+    
+    def test_count(self):
+        a = NestedList(["foo", "foo", "bar", "baz"])
+        self.assertEqual(a.count("foo"), 2)
+        
+    # reverse
+    
+    def test_reverse(self):
+        a = NestedList([3, 2, 1])
+        a.reverse()
+        self.assertEqual(a, [1, 2, 3])
+    
     # ref
     
     def test_ref__no_arg__returns_all_attributes(self):
@@ -179,7 +344,7 @@ class TestNestedList(unittest.TestCase):
     def test_ref__long_path_arg__raises_ValueError(self):
         a = NestedList([["v"]])
         with self.assertRaises(IndexError):
-            print(a.ref((ListIndex(0), ListIndex(1))))
+            a.ref((ListIndex(0), ListIndex(1)))
     
     def test_ref__delimited_arg__returns_value(self):
         a = NestedList([[["v"]]])
@@ -341,61 +506,47 @@ class TestNestedList(unittest.TestCase):
         with self.assertRaises(IndexError):
             a.unset((ListIndex(1), ListIndex(0)))
     
-    # # merge
-    # 
-    # def test_merge__dict_param(self):
-    #     a = NestedDict({("k1",): "v"})
-    #     b = a.merge({("k2",): "v"})
-    #     self.assertEqual(b, {"k1": "v", "k2": "v"})
+    # merge
     
-    # def test_merge__nested_data__nested_data_param(self):
-    #     a = NestedDict({"k1": {"k2": "v"}})
-    #     b = a.merge({"k1": {"k3": "v"}})
-    #     self.assertEqual(b, {"k1": {"k2": "v", "k3": "v"}})
-    # 
-    # def test_merge__NestedDict_param(self):
-    #     a = NestedDict({("k1",): "v"})
-    #     b = a.merge(NestedDict({("k2",): "v"}))
-    #     self.assertEqual(b, {"k1": "v", "k2": "v"})
-    # 
-    # def test_merge__incompatible_types(self):
-    #     a = NestedDict({("k1,"): "v"})
-    #     b = a.merge("foo")
-    #     self.assertEqual(b, "foo")
-    # 
-    # # update
-    # 
-    # def test_update__dict_param(self):
-    #     a = NestedDict({("k1",): "v"})
-    #     a.update({("k2",): "v"})
-    #     self.assertEqual(a, {
-    #         "k1": "v",
-    #         "k2": "v"
-    #     })
-    # 
-    # def test_update__NestedDict_param(self):
-    #     a = NestedDict({("k1",): "v"})
-    #     a.update(NestedDict({("k2",): "v"}))
-    #     self.assertEqual(a, {
-    #         "k1": "v",
-    #         "k2": "v"
-    #     })
-    # 
-    # # collapse
-    # 
-    # def test_collapse(self):
-    #     a = NestedDict({("k1",): {("k2",): {("k3",): "v"}}})
-    #     b = a.collapse()
-    #     self.assertEqual(b, {("k1", "k2", "k3"): "v"})
-    # 
-    # def test_collapse__function_param(self):
-    #     a = NestedDict({("k1", "k2", "$foo", "k3", "k4"): "v"})
-    # 
-    #     def detect_mongo_operator(path, value):
-    #         return path[0] == "$"
-    # 
-    #     b = a.collapse(func=detect_mongo_operator)
-        # self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
+    def test__merge(self):
+        a = NestedList(["v"])
+        self.assertEqual(["foo"], a.merge(["foo"]))
+        
+    def test__merge__unequal_length_sequences(self):
+        a = NestedList(["foo", "bar"])
+        self.assertEqual(["baz", "bar"], a.merge(["baz"]))
+
+    def test_merge__nested_list_arg(self):
+        a = NestedList([[["foo"]]])
+        b = a.merge([[["bar"]]])
+        self.assertEqual(b, [[["bar"]]])
+    
+    def test_merge__NestedDict_param(self):
+        a = NestedList([[["foo"]]])
+        b = a.merge(NestedList([[["bar"]]]))
+        self.assertEqual(b, [[["bar"]]])
+    
+    def test_merge__incompatible_types(self):
+        a = NestedList([[["v"]]])
+        b = a.merge("foo")
+        self.assertEqual(b, [[["v"]]])
+
+    # collapse
+    
+    def test_collapse(self):
+        a = NestedList(["v"])
+        b = a.collapse()
+        self.assertEqual(b, {(ListIndex(0),): 'v'})
+        
+    def test_collapse__function_arg(self):
+        a = NestedList([[["v"]]])
+    
+        def detect_operator(key, data):
+            return isinstance(data, NestedList) and data[key] == "v"
+    
+        b = a.collapse(func=detect_operator)
+        
+        self.assertEqual(b, {(ListIndex(0), ListIndex(0)): ["v"]})
 
 
 if __name__ == "__main__":

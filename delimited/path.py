@@ -9,8 +9,6 @@ which a path to nested data can be defined using one or more path segments.
 import abc
 import copy
 
-from delimited.index import SequenceIndex
-
 
 class Path(abc.ABC):
     """ The abstract base class for Path objects. When subclassing Path the
@@ -99,7 +97,6 @@ class Path(abc.ABC):
         """
 
         for k in self.segments:
-            # yield k.index if isinstance(k, SequenceIndex) else k
             yield k
 
     def __reversed__(self):
@@ -107,7 +104,6 @@ class Path(abc.ABC):
         """
 
         for k in self.segments[::-1]:
-            # yield k.index if isinstance(k, SequenceIndex) else k
             yield k
 
     def __contains__(self, key):

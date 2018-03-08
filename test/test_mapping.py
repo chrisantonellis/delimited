@@ -6,7 +6,7 @@ import copy
 from delimited.path import TuplePath
 from delimited.path import DelimitedStrPath
 
-from delimited.mapping import NestedDict
+from delimited import NestedDict
 
 
 class TestNestedDict(unittest.TestCase):
@@ -20,6 +20,10 @@ class TestNestedDict(unittest.TestCase):
     def test___init____data_arg(self):
         a = NestedDict({"k": {"k": "v"}})
         self.assertEqual(a, {"k": {"k": "v"}})
+        
+    def test___init____raises_TypeError(self):
+        with self.assertRaises(TypeError):
+            a = NestedDict("foo")
     
     # __call__
     
@@ -84,6 +88,12 @@ class TestNestedDict(unittest.TestCase):
         a1 = NestedDict({"k": {"foo": "bar"}})
         a2 = NestedDict({"k": {"foo": "bar"}})
         self.assertFalse(a1 != a2)
+    
+    # __str__
+    
+    def test___str__(self):
+        a = NestedDict({"foo": "bar"})
+        self.assertEqual(str(a), "{'foo': 'bar'}")
     
     # __hash__
     
@@ -388,7 +398,7 @@ class TestNestedDict(unittest.TestCase):
     def test_merge__incompatible_types(self):
         a = NestedDict({"k1": "v"})
         b = a.merge("foo")
-        self.assertEqual(b, "foo")
+        self.assertEqual(b, {"k1": "v"})
     
     # update
     
@@ -418,8 +428,8 @@ class TestNestedDict(unittest.TestCase):
     def test_collapse__function_arg(self):
         a = NestedDict({"k1": {"k2": {"$foo": {"k3": {"k4": "v"}}}}})
     
-        def detect_operator(path, value):
-            return path[0] == "$"
+        def detect_operator(key, *args):
+            return key[0] == "$"
     
         b = a.collapse(func=detect_operator)
         self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})

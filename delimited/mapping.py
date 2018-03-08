@@ -7,24 +7,13 @@ implements an interface through which nested data can be accessed and
 modified using Path objects.
 """
 
-import copy
 
-from delimited import NestedContainer
-
-from delimited.path import TuplePath
-from delimited.path import DelimitedStrPath
-
-
-class NestedMapping(NestedContainer):
+class NestedMapping(object):
     """ The abstract base class for NestedMapping objects. When subclassing
     NestedMapping the path and container attributes must be overridden with a
     Path object and container type respectively. The path object chosen defines
     the collapsed path format used by the NestedMapping class.
     """
-
-    def __init__(self, *args, **kwargs):
-        self.mapping = self.__class__
-        super().__init__(*args, **kwargs)
 
     def __iter__(self):
         """ Yield key, value tuples for instance data.
@@ -62,31 +51,3 @@ class NestedMapping(NestedContainer):
             data = data.unwrap()
 
         self.ref(path).update(data)
-
-
-class NestedDict(NestedMapping, dict):
-    """ This class implements tuple path notation in use with the dict
-    container type.
-    """
-
-    path = TuplePath
-    container = dict
-    
-    def __init__(self, *args, **kwargs): # pragma: no cover
-        from delimited.sequence import NestedList
-        self.sequence = NestedList
-        super().__init__(*args, **kwargs)
-
-
-class DelimitedDict(NestedMapping, dict):
-    """ This class implements delimited string path notation in use with the
-    dict container type.
-    """
-
-    path = DelimitedStrPath
-    container = dict
-    
-    def __init__(self, *args, **kwargs): # pragma: no cover
-        from delimited.sequence import DelimitedList
-        self.sequence = DelimitedList
-        super().__init__(*args, **kwargs)
