@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [ 0.0.6 ] 2018-03-08
+## [ 0.0.8 ] 2018-03-15
+
+### Changed
+* cleanup, removed unnecessary comments
+* changed arguments passed to collapse function to `key`, `value`, `container`
+
+## [ 0.0.7 ] 2018-03-08
 
 ### Added
 * Custom message injected into `KeyError`, `TypeError`, `AttributeError`

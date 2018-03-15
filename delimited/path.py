@@ -9,6 +9,8 @@ which a path to nested data can be defined using one or more path segments.
 import abc
 import copy
 
+from delimited.sequence import ListIndex
+
 
 class Path(abc.ABC):
     """ The abstract base class for Path objects. When subclassing Path the
@@ -283,6 +285,13 @@ class DelimitedStrPath(Path):
     def _encode(self, value):
         """ Encode a list to collapsed path format.
         """
+        
+        if not isinstance(value, list):
+            value = [value]
+            
+        for i, v in enumerate(value):
+            if isinstance(v, ListIndex):
+                value[i] = f"::{v.index}"
 
         return self.delimiter.join(value)
 
@@ -290,8 +299,14 @@ class DelimitedStrPath(Path):
     def _decode(self, value):
         """ Decode collapsed path format to a list.
         """
-
-        return value.split(self.delimiter)
+        
+        decoded = []
+        for v in value.split(self.delimiter):
+            if v[2:] == "::":
+                v = ListIndex(v[:2])
+            decoded.append(v)
+            
+        return decoded
 
     def __repr__(self):
         """ Custom repr for string based path.

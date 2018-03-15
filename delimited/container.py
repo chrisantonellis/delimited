@@ -1,18 +1,15 @@
 """
 delimited.container
 ~~~~~~~~~~~~~~~~~
-
-This module defines...
 """
 
-import abc
 import copy
 
 from delimited.sequence import SequenceIndex
 from delimited.sequence import SequenceValue
 
 
-class NestedContainer(abc.ABC, object):
+class NestedContainer(object):
     container = None
     path = None
     sequence = None
@@ -32,9 +29,7 @@ class NestedContainer(abc.ABC, object):
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return self.data == other.data
-        if isinstance(other, self.container):
-            return self.data == other
-        return False
+        return self.data == other
         
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -77,9 +72,7 @@ class NestedContainer(abc.ABC, object):
         return new
 
     def _wrap(self, data):
-        
         i = data.items() if isinstance(data, dict) else enumerate(data)
-        
         for key, value in i:    
             if isinstance(value, dict):
                 data[key] = self.mapping(data[key])
@@ -89,9 +82,7 @@ class NestedContainer(abc.ABC, object):
         return data
         
     def _unwrap(self, data):
-    
         i = data.items() if isinstance(data, dict) else enumerate(data)
-    
         for key, value in i:
             if isinstance(value, (self.mapping, self.sequence)):
                 data[key] = value.get()
@@ -102,23 +93,14 @@ class NestedContainer(abc.ABC, object):
         return self._unwrap(self.data)
 
     def ref(self, path=None, create=False):
-        """ Return a reference to nested data at path. If create is True and
-        missing key(s) are encountered while trying to resolve path, create
-        the missing key(s) using an instance of self.container as the value.
-        """
-
-        # all attributes
         if path is None:
             return self.data
 
-        # setup haystack
         haystack = self.data
 
-        # setup path
         if not isinstance(path, self.path):
             path = self.path(path)
 
-        # for each segment
         for i, segment in enumerate(path):
             
             s = segment.index if isinstance(segment, SequenceIndex) else segment
@@ -151,11 +133,6 @@ class NestedContainer(abc.ABC, object):
         return haystack
 
     def get(self, path=None, *args):
-        """ Return a copy of nested data at path. First value of args is
-        considered the default value, and if self.ref call raises a KeyError,
-        the default value will be returned.
-        """
-
         try:
             return copy.deepcopy(self._unwrap(self.ref(path)))
         except (KeyError, IndexError):
@@ -164,33 +141,21 @@ class NestedContainer(abc.ABC, object):
             raise
 
     def has(self, path=None):
-        """ Return True if path can be resolved in instance data else False.
-        """
-
         try:
             return bool(self.ref(path))
         except (KeyError, IndexError):
             return False
 
     def copy(self, path=None):
-        """ Return a new instance of self with its data set to a deep copy of
-        this instances data.
-        """
-        
         return copy.copy(self)
 
     def clone(self, path=None):
-        """ Return a new instance of self with its data set to a reference of
-        this instances data.
-        """
-
         clone = self.__class__()
         clone.data = self.ref(path)
         return clone
     
     @classmethod
     def _merge(cls, a, b):
-        
         if not isinstance(a, b.__class__):
             return copy.copy(a)
         
@@ -229,6 +194,7 @@ class NestedContainer(abc.ABC, object):
         
         return self._merge(self.get(path), data)
     
+    # NOTE: expects a dict
     # def _expand(self, data):
     # 
     #     # determine type for expanded data
@@ -242,11 +208,11 @@ class NestedContainer(abc.ABC, object):
     # 
     #             if isinstance(segment, SequenceIndex):
     #                 index = segment.index
-    #                 new_segment = self.sequence([SequenceValue()] * (index + 1))
+    #                 new_segment = [[SequenceValue()] * (index + 1)]
     # 
     #             else:
     #                 index = segment
-    #                 new_segment = self.mapping()
+    #                 new_segment = dict()
     # 
     #             # first segment
     #             if i == 0:
@@ -260,21 +226,16 @@ class NestedContainer(abc.ABC, object):
     # 
     #             # last segment
     #             if i == (len(path) - 1):
-    #                 expanded = self._merge(expanded, expanded_segment)
+    #                 expanded = self._merge(expanded_segment, expanded)
     # 
     #     return expanded
 
     def collapse(self, path=None, func=None):
-        """ Collapse instance data at path and return. Use func to determine
-        if a level of nested data should be collapsed or not.
-        """
         data = self if path is None else self.get(path)
         return self._collapse(data, func=func)
     
     @classmethod
     def _collapse(cls, data, func=None, _parent_path=None):
-        """ Recursively collapse expanded nested data and return.
-        """
 
         collapsed = {}
         path = cls.path() if _parent_path is None else _parent_path
@@ -294,9 +255,15 @@ class NestedContainer(abc.ABC, object):
         for key, value in i:
             
             # NOTE: use of `func` results in current level not being collapsed
-            if callable(func) and func(key, data):
+            if callable(func) and func(key, value, data.__class__):
 
                 if isinstance(data, cls.sequence):
+                    
+                    # if func returns True and current level is sequence
+                    # change collapsed to correct container type for merge
+                    if isinstance(collapsed, dict):
+                        collapsed = []
+                    
                     uncollapsed = list([SequenceValue()] * (key + 1))
                     
                 elif isinstance(data, cls.mapping):
@@ -307,7 +274,12 @@ class NestedContainer(abc.ABC, object):
                 # assiging directly to container, all paths of collapsed
                 # children will not include current level path
                 uncollapsed[key] = cls._collapse(value, func=func)
-                value = {path.encode(): uncollapsed}
+                
+                if isinstance(data, cls.sequence):
+                    value = uncollapsed
+                    
+                elif isinstance(data, cls.mapping):
+                    value = {path.encode(): uncollapsed}
 
             else:
 
@@ -318,7 +290,7 @@ class NestedContainer(abc.ABC, object):
                 # NOTE: create copy of path so further extend calls do not
                 # mutate current level path
                 path_copy = path.copy()
-                path_copy.extend(key)
+                path_copy.append(key)
 
                 # continue to collapse nested values
                 value = cls._collapse(value, func=func, _parent_path=path_copy)
@@ -329,15 +301,12 @@ class NestedContainer(abc.ABC, object):
                     value = {path_copy.encode(): value}
 
             # update root with branch
-            collapsed.update(value)
+            collapsed = cls._merge(collapsed, value)
+
 
         return collapsed
     
     def set(self, path, value, create=True):
-        """ Set value at path in instance data. If create is True, create
-        missing keys while trying to resolve path.
-        """
-
         if not isinstance(path, self.path):
             path = self.path(path)
             
@@ -349,10 +318,6 @@ class NestedContainer(abc.ABC, object):
         haystack[tail] = value
 
     def unset(self, path, cleanup=False):
-        """ Remove value and last key at path. If cleanup is True and key
-        removal results in empty container, remove empty container.
-        """
-
         if not isinstance(path, self.path):
             path = self.path(path)
         
@@ -371,13 +336,6 @@ class NestedContainer(abc.ABC, object):
         return True
 
     def push(self, path, value, create=True):
-        """ Push value to list at path in instance data. If create is True and
-        key for final path segment is not set, create key and create value as
-        empty list and append value to list. If create is True and key for
-        final path segment is wrong type, create value as list with existing
-        value and append value to list.
-        """
-
         if not isinstance(path, self.path):
             path = self.path(path)
 
@@ -409,10 +367,6 @@ class NestedContainer(abc.ABC, object):
         return True
 
     def pull(self, path, value, cleanup=False):
-        """ Remove value from list at path in instance data. If cleanup is True
-        and removal of value results in an empty list, remove list and key.
-        """
-
         if not isinstance(path, self.path):
             path = self.path(path)
 

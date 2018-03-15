@@ -1,12 +1,7 @@
 """
 delimited.sequence
 ~~~~~~~~~~~~~~~~~~
-
-This module defines...
 """
-
-# index
-
 
 class SequenceIndex(object):
     sequence = None
@@ -40,21 +35,14 @@ class ListIndex(SequenceIndex):
     sequence = list
 
 
-# value
-
-
 class SequenceValue(object):
     pass
-
-
-# sequence
 
 
 class NestedSequence(object):
     sequenceindex = None
         
     def __add__(self, other):
-        
         if isinstance(other, self.__class__):
             data = other.data
         elif isinstance(other, self.container):
@@ -63,7 +51,6 @@ class NestedSequence(object):
         return self.__class__(self.data + data)
         
     def __iadd__(self, other):
-        
         if isinstance(other, self.__class__):
             data = other.data
         elif isinstance(other, self.container):

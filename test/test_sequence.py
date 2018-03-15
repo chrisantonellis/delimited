@@ -541,8 +541,8 @@ class TestNestedList(unittest.TestCase):
     def test_collapse__function_arg(self):
         a = NestedList([[["v"]]])
     
-        def detect_operator(key, data):
-            return isinstance(data, NestedList) and data[key] == "v"
+        def detect_operator(key, value, container):
+            return container is NestedList and value == "v"
     
         b = a.collapse(func=detect_operator)
         
