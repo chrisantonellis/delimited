@@ -194,48 +194,53 @@ class NestedContainer(object):
         
         return self._merge(self.get(path), data)
     
-    # NOTE: expects a dict
-    # def _expand(self, data):
-    # 
-    #     # determine type for expanded data
-    #     expanded = self.container()
-    # 
-    #     for path, value in data.items():
-    #         if not isinstance(path, self.path):
-    #             path = self.path(path)
-    # 
-    #         for i, segment in enumerate(reversed(path)):
-    # 
-    #             if isinstance(segment, SequenceIndex):
-    #                 index = segment.index
-    #                 new_segment = [[SequenceValue()] * (index + 1)]
-    # 
-    #             else:
-    #                 index = segment
-    #                 new_segment = dict()
-    # 
-    #             # first segment
-    #             if i == 0:
-    #                 new_segment[index] = value
-    #                 expanded_segment = new_segment
-    # 
-    #             # > first segment
-    #             elif i > 0:
-    #                 new_segment[index] = expanded_segment
-    #                 expanded_segment = new_segment
-    # 
-    #             # last segment
-    #             if i == (len(path) - 1):
-    #                 expanded = self._merge(expanded_segment, expanded)
-    # 
-    #     return expanded
+    def expand(self, data):
+        self.data = self._expand(data)
+        return self
+    
+    def _expand(self, data):
+    
+        # determine type for expanded data
+        expanded = self.container()
+    
+        for path, value in data.items():
+            if not isinstance(path, self.path):
+                path = self.path(path)
+    
+            for i, segment in enumerate(reversed(path)):
+    
+                if isinstance(segment, SequenceIndex):
+                    index = segment.index
+                    new_segment = [SequenceValue()] * (index + 1)
+    
+                else:
+                    index = segment
+                    new_segment = dict()
+    
+                # first segment
+                if i == 0:
+                    new_segment[index] = value
+                    expanded_segment = new_segment
+    
+                # > first segment
+                elif i > 0:
+                    new_segment[index] = expanded_segment
+                    expanded_segment = new_segment
+    
+                # last segment
+                if i == (len(path) - 1):
+                    expanded = self._merge(expanded, expanded_segment)
+    
+        return expanded
 
     def collapse(self, path=None, func=None):
-        data = self if path is None else self.get(path)
+        data = self if path is None else self.ref(path)
         return self._collapse(data, func=func)
     
     @classmethod
     def _collapse(cls, data, func=None, _parent_path=None):
+        """ Recursively collapse expanded nested data and return.
+        """
 
         collapsed = {}
         path = cls.path() if _parent_path is None else _parent_path
@@ -258,12 +263,6 @@ class NestedContainer(object):
             if callable(func) and func(key, value, data.__class__):
 
                 if isinstance(data, cls.sequence):
-                    
-                    # if func returns True and current level is sequence
-                    # change collapsed to correct container type for merge
-                    if isinstance(collapsed, dict):
-                        collapsed = []
-                    
                     uncollapsed = list([SequenceValue()] * (key + 1))
                     
                 elif isinstance(data, cls.mapping):
@@ -274,12 +273,7 @@ class NestedContainer(object):
                 # assiging directly to container, all paths of collapsed
                 # children will not include current level path
                 uncollapsed[key] = cls._collapse(value, func=func)
-                
-                if isinstance(data, cls.sequence):
-                    value = uncollapsed
-                    
-                elif isinstance(data, cls.mapping):
-                    value = {path.encode(): uncollapsed}
+                value = {path.encode(): uncollapsed}
 
             else:
 
@@ -290,7 +284,7 @@ class NestedContainer(object):
                 # NOTE: create copy of path so further extend calls do not
                 # mutate current level path
                 path_copy = path.copy()
-                path_copy.append(key)
+                path_copy.extend(key)
 
                 # continue to collapse nested values
                 value = cls._collapse(value, func=func, _parent_path=path_copy)
@@ -302,7 +296,7 @@ class NestedContainer(object):
 
             # update root with branch
             collapsed = cls._merge(collapsed, value)
-
+            # collapsed.update(value)
 
         return collapsed
     

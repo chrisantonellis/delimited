@@ -543,11 +543,22 @@ class TestNestedList(unittest.TestCase):
     
         def detect_operator(key, value, container):
             return container is NestedList and value == "v"
-    
+        
         b = a.collapse(func=detect_operator)
         
         self.assertEqual(b, {(ListIndex(0), ListIndex(0)): ["v"]})
 
+    # expand
+
+    def test_expand(self):
+        a = NestedList([[["v"]]])
+        b = NestedList().expand(a.collapse())
+        self.assertEqual(b, a)
+        
+    def test__expand(self):
+        a = NestedList([[["v"]]])
+        b = a._expand(a.collapse())
+        self.assertEqual(b, a.get())
 
 if __name__ == "__main__":
     unittest.main()

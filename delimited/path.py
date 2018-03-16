@@ -302,8 +302,8 @@ class DelimitedStrPath(Path):
         
         decoded = []
         for v in value.split(self.delimiter):
-            if v[2:] == "::":
-                v = ListIndex(v[:2])
+            if v[:2] == "::":
+                v = ListIndex(int(v[2:]))
             decoded.append(v)
             
         return decoded

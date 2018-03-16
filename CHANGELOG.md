@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [ 0.0.9 ] 2018-03-16
+
+### Added
+* returned to 100% test coverage
+* `NestedContainer._expand` method and tests
+
+### Changed
+* fixed bug introduced to `NestedContainer._collapse` method
+
 ## [ 0.0.8 ] 2018-03-15
 
 ### Changed

@@ -6,6 +6,8 @@ import copy
 from delimited.path import TuplePath
 from delimited.path import DelimitedStrPath
 
+from delimited.sequence import ListIndex
+
 
 class TestTuplePath(unittest.TestCase):
 
@@ -333,15 +335,27 @@ class TestDelimitedStrPath(unittest.TestCase):
 
     # _encode
 
-    def test___encode(self):
+    def test__encode(self):
         a = DelimitedStrPath()
         self.assertEqual(a._encode(["k1", "k2", "k3"]), "k1.k2.k3")
+        
+    def test__encode__non_list_arg(self):
+        a = DelimitedStrPath()
+        self.assertEqual(a._encode("k"), "k")
+        
+    def test__encode__list_index(self):
+        a = DelimitedStrPath()
+        self.assertEqual(a._encode(["k1", ListIndex(0), "k2"]), "k1.::0.k2")
 
     # _decode
 
-    def test___decode(self):
+    def test__decode(self):
         a = DelimitedStrPath()
         self.assertEqual(a._decode("k1.k2.k3"), ["k1", "k2", "k3"])
+        
+    def test__decode__list_index(self):
+        a = DelimitedStrPath()
+        self.assertEqual(a._decode("k1.::0.k3"), ["k1", ListIndex(0), "k3"])
         
     # __repr__
     

@@ -421,7 +421,7 @@ class TestNestedDict(unittest.TestCase):
     # collapse
     
     def test_collapse(self):
-        a = NestedDict({"k1": {"k2": {"k3": "v"}}})        
+        a = NestedDict({"k1": {"k2": {"k3": "v"}}})
         b = a.collapse()
         self.assertEqual(b, {("k1", "k2", "k3"): "v"})
     
@@ -433,7 +433,30 @@ class TestNestedDict(unittest.TestCase):
     
         b = a.collapse(func=detect_operator)
         self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
-
+        
+    def test_collapse__function_arg__stop_at_root(self):
+        
+        a = NestedDict({"k1": {"k2": {"$foo": {"k3": {"k4": "v"}}}}})
+    
+        def detect_operator(key, *args):
+            return key[0] == "$"
+    
+        b = a.collapse(func=detect_operator)
+        
+        self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
+        
+    # expand
+    
+    def test_expand(self):
+        a = NestedDict({"k1": {"k2": {"k3": "v"}}})
+        b = NestedDict().expand(a.collapse())
+        self.assertEqual(b, a)
+        
+    def test__expand(self):
+        a = NestedDict({"k1": {"k2": {"k3": "v"}}})
+        b = a._expand(a.collapse())
+        self.assertEqual(b, a.get())
+        
 
 if __name__ == "__main__":
     unittest.main()
