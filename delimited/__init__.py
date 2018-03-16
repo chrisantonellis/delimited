@@ -8,7 +8,7 @@ from delimited.path import TuplePath
 from delimited.path import DelimitedStrPath
 
 
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 __title__ = "delimited"
 __summary__ = "Defines types that allow for accessing and modifying nested data"
 __url__ = "https://github.com/chrisantonellis/delimited"

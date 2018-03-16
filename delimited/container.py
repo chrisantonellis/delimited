@@ -273,7 +273,7 @@ class NestedContainer(object):
                 # assiging directly to container, all paths of collapsed
                 # children will not include current level path
                 uncollapsed[key] = cls._collapse(value, func=func)
-                value = {path.encode(): uncollapsed}
+                value = {path.encode(): uncollapsed} if len(path) else uncollapsed
 
             else:
 
@@ -291,7 +291,7 @@ class NestedContainer(object):
 
                 # if value is not collapsable, tree has been traversed for branch
                 # and value of `encoded path: value` should be returned
-                if not isinstance(value, (list, dict)):
+                if not isinstance(value, (list, dict)) and len(path_copy):
                     value = {path_copy.encode(): value}
 
             # update root with branch
