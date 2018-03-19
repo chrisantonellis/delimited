@@ -72,25 +72,29 @@ class NestedContainer(object):
         return new
 
     def _wrap(self, data):
-        i = data.items() if isinstance(data, dict) else enumerate(data)
-        for key, value in i:    
-            if isinstance(value, dict):
-                data[key] = self.mapping(data[key])
-            elif isinstance(value, list):
-                data[key] = self.sequence(data[key])
+        if isinstance(data, (dict, list)):
+            i = data.items() if isinstance(data, dict) else enumerate(data)
+            
+            for key, value in i:    
+                if isinstance(value, dict):
+                    data[key] = self.mapping(data[key])
+                elif isinstance(value, list):
+                    data[key] = self.sequence(data[key])
                 
         return data
-        
+    
     def _unwrap(self, data):
-        i = data.items() if isinstance(data, dict) else enumerate(data)
-        for key, value in i:
-            if isinstance(value, (self.mapping, self.sequence)):
-                data[key] = value.get()
+        if isinstance(data, (self.mapping, self.sequence, dict, list)):
+            i = data.items() if isinstance(data, dict) else enumerate(data)
+            
+            for key, value in i:
+                if isinstance(value, (self.mapping, self.sequence)):
+                    data[key] = value.get()
     
         return data
         
     def unwrap(self):
-        return self._unwrap(self.data)
+        return self._unwrap(self)
 
     def ref(self, path=None, create=False):
         if path is None:
@@ -110,7 +114,7 @@ class NestedContainer(object):
 
             except KeyError as e:
                 if create:
-                    haystack[s] = self.container()
+                    haystack[s] = self.mapping()
                     haystack = haystack[s]
 
                 else:
@@ -119,7 +123,7 @@ class NestedContainer(object):
             
             except IndexError as e:
                 if create:
-                    haystack.append(self.container())
+                    haystack.append(self.sequence())
                     haystack = haystack[s]
 
                 else:
@@ -189,8 +193,9 @@ class NestedContainer(object):
         return b
     
     def merge(self, data, path=None):
+        
         if isinstance(data, self.__class__):
-            data = data.unwrap()
+            data = data.get()
         
         return self._merge(self.get(path), data)
     
@@ -243,24 +248,25 @@ class NestedContainer(object):
         """
 
         collapsed = {}
+        
         path = cls.path() if _parent_path is None else _parent_path
 
-        # sequence
+        # determine iterator
         if isinstance(data, cls.sequence):
             i, index = enumerate(data), cls.sequence.sequenceindex
-
-        # mapping
         elif isinstance(data, cls.mapping):
             i, index = data.items(), None
-
-        # all others
         else:
             return data
+            
+        # capture func if already set on self
+        if func is None and hasattr(cls, "_collapse_func"):
+            func = cls._collapse_func
 
         for key, value in i:
             
             # NOTE: use of `func` results in current level not being collapsed
-            if callable(func) and func(key, value, data.__class__):
+            if func is not None and func(key, value, data.__class__):
 
                 if isinstance(data, cls.sequence):
                     uncollapsed = list([SequenceValue()] * (key + 1))

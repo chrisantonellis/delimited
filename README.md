@@ -1,4 +1,4 @@
-# Delimited 0.0.6
+# Delimited
 
 [![Travis](https://img.shields.io/travis/chrisantonellis/delimited.svg?style=flat-square)](https://img.shields.io/travis/USER/REPO.svg)
 [![Coveralls github](https://img.shields.io/coveralls/github/chrisantonellis/delimited.svg?style=flat-square)](https://coveralls.io/github/chrisantonellis/delimited)

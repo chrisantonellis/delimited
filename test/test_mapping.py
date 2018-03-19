@@ -434,6 +434,19 @@ class TestNestedDict(unittest.TestCase):
         b = a.collapse(func=detect_operator)
         self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
         
+    def test_collapse__function_arg__preset(self):
+        
+        class CustomDict(NestedDict):
+            
+            @staticmethod
+            def _collapse_func(key, value, container):
+                return key[0] == "$"
+                
+        a = CustomDict({"k1": {"k2": {"$foo": {"k3": {"k4": "v"}}}}})
+    
+        b = a.collapse()
+        self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
+        
     def test_collapse__function_arg__stop_at_root(self):
         a = NestedDict({"k1": {"k2": {"$foo": {"k3": {"k4": "v"}}}}})
     
