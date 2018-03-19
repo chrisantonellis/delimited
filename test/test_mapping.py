@@ -36,6 +36,11 @@ class TestNestedDict(unittest.TestCase):
         a = NestedDict()
         a({"k": {"k": "v"}})
         self.assertEqual(a, {"k": {"k": "v"}})
+        
+    def test___call____instance_of_self_arg(self):
+        a = NestedDict()
+        a(NestedDict({"k": "v"}))
+        self.assertEqual(a, {"k": "v"})
     
     # __bool__
     

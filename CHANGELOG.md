@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [ 0.0.12 ] 2018-03-19
+
+### Changed
+* `NestedContainer.__call__` changed to accept instance of self for data
+  on instantiation, test case
+
 ## [ 0.0.11 ] 2018-03-19
 
 ### Changed
@@ -12,8 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   
 ### Added
 * `NestedContainer._collapse` now checks for existence of `_collapse_func` on 
-  self and uses that if set
-* Test added for checking for existing `_collapse_func` method
+  self and uses that if set, test case
 
 ## [ 0.0.10 ] 2018-03-16
 
