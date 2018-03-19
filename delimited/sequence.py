@@ -88,9 +88,6 @@ class NestedSequence(object):
     def pop(self, *args):
         return self.data.pop(*args)
         
-    def clear(self):
-        return self()
-        
     def index(self, value):
         return self.data.index(value)
         

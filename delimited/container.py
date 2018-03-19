@@ -73,6 +73,9 @@ class NestedContainer(object):
         new.data = copy.deepcopy(self.data)
         return new
 
+    def clear(self):
+        return self()
+
     def _wrap(self, data):
         if isinstance(data, (dict, list)):
             i = data.items() if isinstance(data, dict) else enumerate(data)
