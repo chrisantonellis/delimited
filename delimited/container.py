@@ -164,7 +164,7 @@ class NestedContainer(object):
     def has(self, path=None):
         try:
             return bool(self.ref(path))
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, TypeError):
             return False
 
     def copy(self, path=None):

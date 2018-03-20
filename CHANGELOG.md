@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Added
+* `NestedContainer.has` updated to check for `TypeError` for False response
+
 ## [ 0.0.15 ] 2018-03-20
 
 ### Changed
