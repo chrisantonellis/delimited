@@ -21,7 +21,7 @@ class NestedContainer(object):
     def __call__(self, data=None):
         if data is None:
             self.data = self.container()
-        elif isinstance(data, self.__class__):
+        elif issubclass(data.__class__, self.__class__):
             self.data = copy.deepcopy(data.data)
         elif isinstance(data, self.container):
             self.data = self._wrap(data)
@@ -400,4 +400,3 @@ class NestedContainer(object):
                 del haystack[tail]
 
         return True
-
