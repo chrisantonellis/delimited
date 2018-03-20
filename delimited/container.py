@@ -101,7 +101,7 @@ class NestedContainer(object):
     def unwrap(self):
         return self._unwrap(self)
 
-    def ref(self, path=None, create=False):
+    def ref(self, path=None, create=False, func=None):
         if path is None:
             return self.data
 
@@ -110,13 +110,25 @@ class NestedContainer(object):
         if not isinstance(path, self.path):
             path = self.path(path)
 
+        if func is None and hasattr(self, "_ref_func"):
+            func = self._ref_func
+
         for i, segment in enumerate(path):
             
             s = segment.index if isinstance(segment, SequenceIndex) else segment
             
             try:
+                
+                if func is not None:
+                    haystack = func(haystack, segment, path, i)
+                    
                 haystack = haystack[s]
-
+                
+            except StopIteration as e:
+                if hasattr(e, "haystack"):
+                    haystack = e.haystack
+                break
+        
             except KeyError as e:
                 if create:
                     haystack[s] = self.mapping()
@@ -138,7 +150,7 @@ class NestedContainer(object):
             except TypeError as e:
                 e.args = (f"{s} in {path}",) + e.args[1:]
                 raise
-
+                
         return haystack
 
     def get(self, path=None, *args):

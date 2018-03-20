@@ -217,6 +217,55 @@ class TestNestedDict(unittest.TestCase):
         a.ref("k", create=True)
         self.assertEqual(a, {"k": {}})
     
+    def test_ref__func_arg(self):
+        
+        class CustomClass(NestedDict):
+            def get(self):
+                return {"k2": {"k3": "v"}}
+        
+        def ref_func(haystack, segment, path, i):
+            if isinstance(haystack, CustomClass):
+                return haystack.get()
+            return haystack
+            
+        a = NestedDict({"k1": CustomClass()})
+        
+        self.assertEqual(a.ref(("k1", "k2", "k3"), func=ref_func), "v")
+        
+    def test_ref__func_arg__raises_StopIteration(self):
+        
+        class CustomClass(NestedDict):
+            def get(self):
+                return "foo"
+        
+        def ref_func(haystack, segment, path, i):
+            if isinstance(haystack, CustomClass):
+                e = StopIteration()
+                e.haystack = haystack.get()
+                raise e
+                
+            return haystack
+            
+        a = NestedDict({"k1": {"k2": CustomClass()}})
+        
+        self.assertEqual(a.ref(("k1", "k2", "k3"), func=ref_func), "foo")
+    
+    def test_ref__func_set_on_class(self):
+        
+        class CustomClass(NestedDict):
+            def get(self):
+                return {"k2": {"k3": "v"}}
+        
+        class CustomDict(NestedDict):
+            
+            def _ref_func(self, haystack, segment, path, i):
+                if isinstance(haystack, CustomClass):
+                    return haystack.get()
+                return haystack
+                
+        a = CustomDict({"k1": CustomClass()})
+        self.assertEqual(a.ref(("k1", "k2", "k3")), "v")
+    
     # get
     
     def test_get__string_arg__returns_value(self):
