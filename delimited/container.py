@@ -135,7 +135,7 @@ class NestedContainer(object):
                     haystack = haystack[s]
 
                 else:
-                    e.args = (f"{s} in {path}",) + e.args[1:]
+                    # e.args = (f"{s} in {path}",) + e.args[1:]
                     raise
             
             except IndexError as e:
@@ -144,11 +144,11 @@ class NestedContainer(object):
                     haystack = haystack[s]
 
                 else:
-                    e.args = (f"{s} in {path}",) + e.args[1:]
+                    # e.args = (f"{s} in {path}",) + e.args[1:]
                     raise
 
             except TypeError as e:
-                e.args = (f"{s} in {path}",) + e.args[1:]
+                # e.args = (f"{s} in {path}",) + e.args[1:]
                 raise
                 
         return haystack
