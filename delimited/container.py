@@ -156,7 +156,7 @@ class NestedContainer(object):
     def get(self, path=None, *args):
         try:
             return copy.deepcopy(self._unwrap(self.ref(path)))
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, TypeError):
             if args:
                 return args[0]
             raise
