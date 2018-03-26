@@ -121,8 +121,8 @@ class NestedContainer(object):
                 
                 if func is not None:
                     haystack = func(haystack, segment, path, i)
-                    
-                haystack = haystack[s]
+                else:
+                    haystack = haystack[s]
                 
             except StopIteration as e:
                 if hasattr(e, "haystack"):
