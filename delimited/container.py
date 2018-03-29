@@ -7,6 +7,7 @@ import copy
 
 from delimited.sequence import SequenceIndex
 from delimited.sequence import SequenceValue
+from delimited.exceptions import StopPathIteration
 
 
 class NestedContainer(object):
@@ -101,57 +102,90 @@ class NestedContainer(object):
     def unwrap(self):
         return self._unwrap(self)
 
-    def ref(self, path=None, create=False, func=None):
-        if path is None:
-            return self.data
 
+
+    def _access_handler(self, haystack, segment, path, i):
+        return haystack[segment], None
+
+    def _access(self, path=None, create=False, _function=None, _function_kwargs={}):
+    
+        # setup haystack
         haystack = self.data
-
+        status = None
+    
+        # setup path
         if not isinstance(path, self.path):
             path = self.path(path)
-
-        if func is None and hasattr(self, "_ref_func"):
-            func = self._ref_func
-
+    
+        # evaluate path
         for i, segment in enumerate(path):
-            
-            s = segment.index if isinstance(segment, SequenceIndex) else segment
-            
+    
             try:
                 
-                if func is not None:
-                    haystack = func(haystack, segment, path, i)
+                # handle segment
+                if isinstance(segment, SequenceIndex):
+                    s = segment.index
                 else:
-                    haystack = haystack[s]
+                    s = segment
                 
-            except StopIteration as e:
-                if hasattr(e, "haystack"):
-                    haystack = e.haystack
+                kwargs = {
+                    "haystack": haystack,
+                    "segment": s,
+                    "path": path,
+                    "i": i
+                }    
+                
+                if i == len(path) - 1 and _function is not None:
+                    kwargs.update(_function_kwargs)
+                    f = _function
+                else:
+                    f = self._access_handler
+                
+                haystack, status = f(**kwargs)
+    
+            except StopPathIteration as e:
+                haystack, status = e.get()
                 break
-        
-            except KeyError as e:
-                if create:
-                    haystack[s] = self.mapping()
-                    haystack = haystack[s]
-
-                else:
-                    # e.args = (f"{s} in {path}",) + e.args[1:]
-                    raise
-            
-            except IndexError as e:
-                if create:
-                    haystack.append(self.sequence())
-                    haystack = haystack[s]
-
-                else:
-                    # e.args = (f"{s} in {path}",) + e.args[1:]
-                    raise
-
-            except TypeError as e:
-                # e.args = (f"{s} in {path}",) + e.args[1:]
-                raise
+    
+            except (KeyError, IndexError) as e:
                 
-        return haystack
+                if create:
+                    
+                    if isinstance(segment, SequenceIndex):
+                        while len(haystack) < s + 1:
+                            haystack.append(SequenceValue())
+                    
+                    if i == len(path) - 1:
+                        
+                        if _function is None or _function is self._set_handler:
+                            if isinstance(segment, SequenceIndex):
+                                haystack[s] = self.sequence()
+                            else:
+                                haystack[s] = self.mapping()    
+                        
+                        elif _function in [self._push_handler, self._pull_handler]:
+                            haystack[s] = self.sequence()
+                    
+                    else:
+                        if isinstance(path[i+1], SequenceIndex):
+                            haystack[s] = self.sequence()
+                        else:
+                            haystack[s] = self.mapping()
+                            
+                    haystack, status = f(**kwargs)
+                else:
+                    # TODO: fix this, exceptions swallowing error from
+                    # lower level exception
+                    # e.args = (f"{s} in {path}",) + e.args[1:]
+                    raise
+    
+            except TypeError as e:
+                raise
+        
+        return haystack, status
+        
+    def ref(self, path=None, create=False):
+        return self._access(path=path, create=create)[0]
 
     def get(self, path=None, *args):
         try:
@@ -166,6 +200,67 @@ class NestedContainer(object):
             return bool(self.ref(path))
         except (KeyError, IndexError, TypeError):
             return False
+
+
+
+    def _set_handler(self, haystack, value, segment, path, i):
+        haystack[segment] = value
+        return None, None
+
+    def set(self, path, value, create=True):
+        haystack, status = self._access(
+            path=path,
+            create=create,
+            _function=self._set_handler,
+            _function_kwargs={"value": value}
+        )
+
+
+
+    def _unset_handler(self, haystack, segment, path, i):
+        del haystack[segment]
+        return None, None
+
+    def unset(self, path):
+        haystack, status = self._access(
+            path=path,
+            _function=self._unset_handler
+        )
+
+
+    def _push_handler(self, haystack, segment, path, i, value, create):
+        if create == True and not isinstance(haystack[segment], self.sequence):
+            haystack[segment] = [haystack[segment]]
+        haystack[segment].append(value)
+        return None, None
+
+
+    def push(self, path, value, create=True):
+        haystack, status = self._access(
+            path=path,
+            create=create,
+            _function=self._push_handler,
+            _function_kwargs={
+                "value": value,
+                "create": create
+            }
+        )
+
+    def _pull_handler(self, haystack, segment, path, i, value, cleanup):
+        haystack[segment].remove(value)
+        if cleanup == True and len(haystack[segment]) == 0:
+            del haystack[segment]
+        return None, None
+
+    def pull(self, path, value, cleanup=False):
+        haystack, status = self._access(
+            path=path,
+            _function=self._pull_handler,
+            _function_kwargs={
+                "value": value,
+                "cleanup": cleanup
+            }
+        )
 
     def copy(self, path=None):
         return copy.copy(self)
@@ -322,81 +417,3 @@ class NestedContainer(object):
             # collapsed.update(value)
 
         return collapsed
-    
-    def set(self, path, value, create=True):
-        if not isinstance(path, self.path):
-            path = self.path(path)
-            
-        tail = path.tail
-        if path.head is None and isinstance(path.tail, SequenceIndex):
-            tail = path.tail.index
-            
-        haystack = self.ref(path.head, create=create)
-        haystack[tail] = value
-
-    def unset(self, path, cleanup=False):
-        if not isinstance(path, self.path):
-            path = self.path(path)
-        
-        haystack = self.ref(path.head)
-        
-        tail = path.tail
-        if path.head is None and isinstance(path.tail, SequenceIndex):
-            tail = path.tail.index
-        
-        del haystack[tail]
-
-        if cleanup and path.head is not None:
-            if not len(haystack):
-                self.unset(path.head)
-
-        return True
-
-    def push(self, path, value, create=True):
-        if not isinstance(path, self.path):
-            path = self.path(path)
-
-        haystack = self.ref(path.head, create=create)
-        
-        tail = path.tail
-        if path.head is None and isinstance(path.tail, SequenceIndex):
-            tail = path.tail.index
-
-        try:
-            haystack[tail].append(value)
-
-        except KeyError as e:
-            if create:
-                haystack[tail] = self.sequence()
-                haystack[tail].append(value)
-            else:
-                e.args = (f"{tail} in {path}",) + e.args[1:]
-                raise
-
-        except AttributeError as e:
-            if create:
-                haystack[tail] = self.sequence([haystack[tail]])
-                haystack[tail].append(value)
-            else:
-                e.args = (f"{tail} in {path}",) + e.args[1:]
-                raise
-
-        return True
-
-    def pull(self, path, value, cleanup=False):
-        if not isinstance(path, self.path):
-            path = self.path(path)
-
-        haystack = self.ref(path.head)
-
-        tail = path.tail
-        if path.head is None and isinstance(path.tail, SequenceIndex):
-            tail = path.tail.index
-
-        haystack[tail].remove(value)
-
-        if cleanup:
-            if not len(haystack[tail]):
-                del haystack[tail]
-
-        return True

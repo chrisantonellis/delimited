@@ -153,19 +153,9 @@ class Path(abc.ABC):
 
         pass  # pragma: no cover
 
-    @property
-    def head(self):
-        """ Return the head of the list of path segments, meaning all segments
-        except for the last one. If there is only one segment return None
-        """
-
-        h = self.segments[:-1]
-        return self._encode(h) if isinstance(h, list) and h else h or None
-    
-    @property
-    def tail(self):
-
-        return self.segments[-1]
+    def after(self, index):
+        return self.segments[index + 1:]
+        
 
     def append(self, value):
         """ Add value to the end of path segments. Accepts a path segment.

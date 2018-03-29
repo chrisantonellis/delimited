@@ -485,7 +485,7 @@ class TestNestedList(unittest.TestCase):
             a.pull(ListIndex(0), "bar")
     
     def test_pull__path_arg__raises_TypeError(self):
-        a = NestedList(["v"])
+        a = NestedList([True])
         with self.assertRaises(TypeError):
             a.pull((ListIndex(0), ListIndex(0)), "v")
     
@@ -495,11 +495,6 @@ class TestNestedList(unittest.TestCase):
         a = NestedList([[["v"]]])
         a.unset((ListIndex(0), ListIndex(0)))
         self.assertEqual(a, [[]])
-    
-    def test_unset__cleanup_arg_True__removes_empty_containers(self):
-        a = NestedList([[["v"]]])
-        a.unset((ListIndex(0), ListIndex(0)), cleanup=True)
-        self.assertEqual(a, [])
     
     def test_unset__path_arg__raises_IndexError(self):
         a = NestedList([[["v"]]])

@@ -5,6 +5,8 @@ import copy
 
 from delimited.path import TuplePath
 from delimited.path import DelimitedStrPath
+from delimited.exceptions import StopPathIteration
+from delimited.sequence import SequenceIndex
 
 from delimited import NestedDict
 
@@ -217,54 +219,24 @@ class TestNestedDict(unittest.TestCase):
         a.ref("k", create=True)
         self.assertEqual(a, {"k": {}})
     
-    def test_ref__func_arg(self):
+    def test_ref__subclassing(self):
         
-        class CustomClass(NestedDict):
-            def get(self):
-                return {"k2": {"k3": "v"}}
-        
-        def ref_func(haystack, segment, path, i):
-            if isinstance(haystack, CustomClass):
-                return haystack.get()
-            return haystack
+        class Foo(NestedDict):
             
-        a = NestedDict({"k1": CustomClass()})
-        
-        self.assertEqual(a.ref(("k1", "k2", "k3"), func=ref_func), "v")
-        
-    def test_ref__func_arg__raises_StopIteration(self):
-        
-        class CustomClass(NestedDict):
-            def get(self):
-                return "foo"
-        
-        def ref_func(haystack, segment, path, i):
-            if isinstance(haystack, CustomClass):
-                e = StopIteration()
-                e.haystack = haystack.get()
-                raise e
+            def _access_handler(self, haystack, segment, path, i):
+            
+                if isinstance(haystack[segment], Foo):
+                    model = haystack[segment]
+                    haystack = model.get(path.after(i))
+                    status = {"child": True}
+                    raise StopPathIteration(haystack, status)
+             
+                return super()._access_handler(haystack, segment, path, i)
                 
-            return haystack
-            
-        a = NestedDict({"k1": {"k2": CustomClass()}})
+        child = Foo({"k": "v"})
+        parent = Foo({"child": child})
         
-        self.assertEqual(a.ref(("k1", "k2", "k3"), func=ref_func), "foo")
-    
-    def test_ref__func_set_on_class(self):
-        
-        class CustomClass(NestedDict):
-            def get(self):
-                return {"k2": {"k3": "v"}}
-        
-        class CustomDict(NestedDict):
-            
-            def _ref_func(self, haystack, segment, path, i):
-                if isinstance(haystack, CustomClass):
-                    return haystack.get()
-                return haystack
-                
-        a = CustomDict({"k1": CustomClass()})
-        self.assertEqual(a.ref(("k1", "k2", "k3")), "v")
+        value = parent.get("child")
     
     # get
     
@@ -341,7 +313,7 @@ class TestNestedDict(unittest.TestCase):
         a.set("k", "v")
         self.assertEqual(a, {"k": "v"})
     
-    def test_set__delimited_string_key_param(self):
+    def test_set__delimited_path_arg(self):
         a = NestedDict()
         a.set(("k1", "k2", "k3"), "v")
         self.assertEqual(a, {"k1": {"k2": {"k3": "v"}}})
@@ -372,6 +344,11 @@ class TestNestedDict(unittest.TestCase):
         a = NestedDict()
         a.push("k", "v")
         self.assertEqual(a, {"k": ["v"]})
+    
+    def test_push__create_True__creates_missing_containers(self):
+        a = NestedDict()
+        a.push(("k1", "k2", SequenceIndex(0)), "v")
+        # print(a)
     
     def test_push__create_False__raises_KeyError(self):
         a = NestedDict()
@@ -421,11 +398,6 @@ class TestNestedDict(unittest.TestCase):
         a = NestedDict({"k": "v"})
         a.unset("k")
         self.assertEqual(a, {})
-    
-    def test_unset__cleanup_True__removes_empty_containers(self):
-        a = NestedDict({"k1": {"k2": {"k3": "v"}}})
-        a.unset(("k1", "k2", "k3"), cleanup=True)
-        self.assertEqual(a, {"k1": {}})
     
     def test_unset__string_arg__raises_KeyError(self):
         a = NestedDict({"k": "v"})
@@ -487,20 +459,20 @@ class TestNestedDict(unittest.TestCase):
     
         b = a.collapse(func=detect_operator)
         self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
-        
+    
     def test_collapse__function_arg__preset(self):
-        
+    
         class CustomDict(NestedDict):
-            
+    
             @staticmethod
             def _collapse_func(key, value, container):
                 return key[0] == "$"
-                
+    
         a = CustomDict({"k1": {"k2": {"$foo": {"k3": {"k4": "v"}}}}})
     
         b = a.collapse()
         self.assertEqual(b, {("k1", "k2"): {"$foo": {("k3", "k4"): "v"}}})
-        
+    
     def test_collapse__function_arg__stop_at_root(self):
         a = NestedDict({"k1": {"k2": {"$foo": {"k3": {"k4": "v"}}}}})
     
@@ -509,14 +481,14 @@ class TestNestedDict(unittest.TestCase):
     
         b = a.collapse(func=detect_operator)
         self.assertEqual(b, {"k1": {("k2", "$foo", "k3", "k4"): "v"}})
-        
+    
     # expand
     
     def test_expand(self):
         a = NestedDict({"k1": {"k2": {"k3": "v"}}})
         b = NestedDict().expand(a.collapse())
         self.assertEqual(b, a)
-        
+    
     def test__expand(self):
         a = NestedDict({"k1": {"k2": {"k3": "v"}}})
         b = a._expand(a.collapse())
