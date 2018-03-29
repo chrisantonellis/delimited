@@ -102,12 +102,10 @@ class NestedContainer(object):
     def unwrap(self):
         return self._unwrap(self)
 
-
-
-    def _access_handler(self, haystack, segment, path, i):
+    def _access_handler(self, haystack, segment, path, i, kwargs={}):
         return haystack[segment], None
 
-    def _access(self, path=None, create=False, _function=None, _function_kwargs={}):
+    def _access(self, path=None, create=False, _update_function=None, _update_kwargs={}):
     
         # setup haystack
         haystack = self.data
@@ -135,13 +133,21 @@ class NestedContainer(object):
                     "i": i
                 }    
                 
-                if i == len(path) - 1 and _function is not None:
-                    kwargs.update(_function_kwargs)
-                    f = _function
+                if i == len(path) - 1 and _update_function is not None:
+                    function = _update_function
+                    kwargs.update(_update_kwargs)
+                    
                 else:
-                    f = self._access_handler
+                    function = self._access_handler
+                    kwargs.update({
+                        "kwargs": {
+                            "create": create,
+                            "_update_function": _update_function,
+                            "_update_kwargs": _update_kwargs
+                        }
+                    })
                 
-                haystack, status = f(**kwargs)
+                haystack, status = function(**kwargs)
     
             except StopPathIteration as e:
                 haystack, status = e.get()
@@ -157,13 +163,13 @@ class NestedContainer(object):
                     
                     if i == len(path) - 1:
                         
-                        if _function is None or _function is self._set_handler:
+                        if _update_function is None or _update_function is self._set_handler:
                             if isinstance(segment, SequenceIndex):
                                 haystack[s] = self.sequence()
                             else:
                                 haystack[s] = self.mapping()    
                         
-                        elif _function in [self._push_handler, self._pull_handler]:
+                        elif _update_function in [self._push_handler, self._pull_handler]:
                             haystack[s] = self.sequence()
                     
                     else:
@@ -172,7 +178,7 @@ class NestedContainer(object):
                         else:
                             haystack[s] = self.mapping()
                             
-                    haystack, status = f(**kwargs)
+                    haystack, status = function(**kwargs)
                 else:
                     # TODO: fix this, exceptions swallowing error from
                     # lower level exception
@@ -211,8 +217,8 @@ class NestedContainer(object):
         haystack, status = self._access(
             path=path,
             create=create,
-            _function=self._set_handler,
-            _function_kwargs={"value": value}
+            _update_function=self._set_handler,
+            _update_kwargs={"value": value}
         )
 
 
@@ -224,7 +230,7 @@ class NestedContainer(object):
     def unset(self, path):
         haystack, status = self._access(
             path=path,
-            _function=self._unset_handler
+            _update_function=self._unset_handler
         )
 
 
@@ -239,8 +245,8 @@ class NestedContainer(object):
         haystack, status = self._access(
             path=path,
             create=create,
-            _function=self._push_handler,
-            _function_kwargs={
+            _update_function=self._push_handler,
+            _update_kwargs={
                 "value": value,
                 "create": create
             }
@@ -255,8 +261,8 @@ class NestedContainer(object):
     def pull(self, path, value, cleanup=False):
         haystack, status = self._access(
             path=path,
-            _function=self._pull_handler,
-            _function_kwargs={
+            _update_function=self._pull_handler,
+            _update_kwargs={
                 "value": value,
                 "cleanup": cleanup
             }

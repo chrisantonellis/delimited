@@ -223,7 +223,7 @@ class TestNestedDict(unittest.TestCase):
         
         class Foo(NestedDict):
             
-            def _access_handler(self, haystack, segment, path, i):
+            def _access_handler(self, haystack, segment, path, i, kwargs):
             
                 if isinstance(haystack[segment], Foo):
                     model = haystack[segment]
