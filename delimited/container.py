@@ -156,6 +156,9 @@ class NestedContainer(object):
                         # })
                     
                     kwargs.update({"default": default})
+                    
+                    import pprint
+                    pprint.pprint(kwargs)
                 
                 haystack, status = function(**kwargs)
     
