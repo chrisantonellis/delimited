@@ -223,21 +223,33 @@ class TestNestedDict(unittest.TestCase):
         
         class Foo(NestedDict):
             
-            def _access_handler(self, haystack, segment, path, i, kwargs):
+            def _access_handler(self, haystack, segment, path, i, default):
             
-                if isinstance(haystack[segment], Foo):
+                if isinstance(haystack[segment], Foo):                    
                     model = haystack[segment]
                     haystack = model.get(path.after(i))
                     status = {"child": True}
                     raise StopPathIteration(haystack, status)
              
-                return super()._access_handler(haystack, segment, path, i)
+                return default()
                 
         child = Foo({"k": "v"})
         parent = Foo({"child": child})
         
         value = parent.get("child")
-    
+        
+    def test_ref__subclassing2(self):
+        
+        class Foo(NestedDict):
+            
+            def _access_handler(self, haystack, segment, path, i, default):
+                return default()
+                
+        child = Foo({"k": "v"})
+        parent = Foo({"child": child})
+        
+        parent.get("child")
+
     # get
     
     def test_get__string_arg__returns_value(self):

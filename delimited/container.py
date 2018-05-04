@@ -102,7 +102,8 @@ class NestedContainer(object):
     def unwrap(self):
         return self._unwrap(self)
 
-    def _access_handler(self, haystack, segment, path, i, kwargs={}):
+    # def _access_handler(self, haystack, segment, path, i, default=None, _update_function=None, _update_kwargs=None):
+    def _access_handler(self, haystack, segment, path, i, default=None):
         return haystack[segment], None
 
     def _access(self, path=None, create=False, _update_function=None, _update_kwargs={}):
@@ -139,13 +140,22 @@ class NestedContainer(object):
                     
                 else:
                     function = self._access_handler
-                    kwargs.update({
-                        "kwargs": {
-                            "create": create,
-                            "_update_function": _update_function,
-                            "_update_kwargs": _update_kwargs
-                        }
-                    })
+                    
+                    # create closure for default method that access handler
+                    # should call if no special logic applied 
+                    def default(**kwargs):
+                        return haystack[segment], None
+                        
+                        # return self._access_handler_no_override(**{
+                        #     "haystack": haystack,
+                        #     "segment": s,
+                        #     "path": path,
+                        #     "i": i,
+                        #     "_update_function": _update_function,
+                        #     "_update_kwargs": _update_kwargs
+                        # })
+                    
+                    kwargs.update({"default": default})
                 
                 haystack, status = function(**kwargs)
     
